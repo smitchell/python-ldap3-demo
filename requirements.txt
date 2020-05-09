@@ -1,7 +1,7 @@
 pytest==5.4.2
 pytest-cov==2.8.1
 Flask==1.1.1
-werkzeug==0.15.3
+werkzeug==0.16.0
 gunicorn==19.9.0
 requests==2.23.0
 argparse==1.4.0
