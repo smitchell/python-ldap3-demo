@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: python_ldap3_demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: python_ldap3_demo
+  name: python_ldap3_demo
+  namespace: python_ldap3_demo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: python_ldap3_demo
+    spec:
+      containers:
+#        - image: docker.pkg.github.com/martinheinz/python-project-python_ldap3_demo/example:flask
+#          ^^^^^  https://github.com/containerd/containerd/issues/3291 https://github.com/kubernetes-sigs/kind/issues/870        - image: martinheinz/python-project-python_ldap3_demo:flask
+          name: python_ldap3_demo
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: env-config-python_ldap3_demo
+            - secretRef:
+                name: env-secrets-python_ldap3_demo
+#      imagePullSecrets:  # In case you are using private registry (see kubectl command at the bottom on how to create regcred)
+#        - name: regcred
+  selector:
+    matchLabels:
+      app: python_ldap3_demo
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-config-python_ldap3_demo
+  namespace: python_ldap3_demo
+data:  # Example vars that will get picked up by Flask application
+  FLASK_ENV: development
+  FLASK_DEBUG: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python_ldap3_demo
+  namespace: python_ldap3_demo
+  labels:
+    app: python_ldap3_demo
+spec:
+  selector:
+    app: python_ldap3_demo
+  ports:
+    - name: http
+      targetPort: 5000  # port the container accepts traffic on
+      port: 443  # port other pods use to access the Service
+      protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: python_ldap3_demo-ingress
+  namespace: python_ldap3_demo
+  annotations:
+#    nginx.ingress.kubernetes.io/auth-tls-secret: tls-secret  # https://kubernetes.github.io/ingress-nginx/user-guide/tls/
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: python_ldap3_demo
+spec:
+  tls:
+    - hosts:
+      - localhost
+      secretName: tls-secret
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: python_ldap3_demo
+              servicePort: 443
+---
+# To create secret map for application:
+#
+# kubectl create secret generic env-secrets-python_ldap3_demo --from-literal=VAR=VALUE --dry-run -o yaml >> app.yaml && echo "---" >> app.yaml
+#
+# To create TLS secret
+#
+# KEY_FILE="python_ldap3_demo.key"
+# CERT_FILE="python_ldap3_demo.crt"
+# HOST="localhost"
+# CERT_NAME=tls-secret
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEY_FILE} -out ${CERT_FILE} -subj "/CN=${HOST}/O=${HOST}"
+#
+# kubectl create secret tls ${CERT_NAME} --key ${KEY_FILE} --cert ${CERT_FILE} --dry-run -o yaml >> app.yaml && echo "---" >> app.yaml
+#
+# kubectl create secret docker-registry regcred --namespace=kube-system --docker-server=docker.pkg.github.com --docker-username=<USERNAME> --docker-password=<GITHUB_REG_TOKEN> --dry-run -o yaml >> app.yaml
+
