@@ -1,5 +1,5 @@
 # The binary to build (just the basename).
-MODULE := python_ldap3_demo
+MODULE := main
 
 # Where to push the docker image.
 REGISTRY ?= docker.pkg.github.com/smitchell/python-ldap3-demo

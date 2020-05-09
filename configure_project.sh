@@ -14,7 +14,7 @@ do
 done
 
 DUMMY_MODULE='python_ldap3_demo'
-DUMMY_REGISTRY='docker.pkg.github.com/martinheinz/python-project-blueprint'
+DUMMY_REGISTRY='docker.pkg.github.com/smitchell/python-ldap3-demo'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
