@@ -56,6 +56,7 @@ local_settings.py
 # Flask stuff:
 instance/
 .webassets-cache
+/config.json
 
 # Scrapy stuff:
 .scrapy
@@ -107,3 +108,4 @@ config.env
 *.csr
 *.key
 *.pem
+
