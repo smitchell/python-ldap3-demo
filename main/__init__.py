@@ -1,1 +1,1 @@
-from .app import Microservice  # noqa: F401
+from .app import APP  # noqa: F401

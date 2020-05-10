@@ -1,4 +1,4 @@
-from .app import Microservice
+from .app import APP
 
 if __name__ == '__main__':
-    Microservice.run()
+    APP.run(host='0.0.0.0', port=5000, debug=True)
