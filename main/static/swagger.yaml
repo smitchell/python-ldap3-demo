@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: LDAP3 Demo
+  description: A demonstration microserver for LDAP3
+  version: 1.0.0
+
+servers:
+  - url: https://prod.something.com:5000
+    description: Production
+  - url: http://staging.something.com:5000
+    description: Staging
+  - url: http://127.0.0.1:5000
+    description: Local testing
+
+paths:
+  /api/add:
+      post:
+        summary: Adds a new element
+        description: Creates a new object with the specified attributes
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddEntry'
+        responses:
+          '201':
+            description: LDAP returned true.
+          '400':
+            description: The request JSON was not valid, or the dn is in use.
+          '500':
+            descripiton: LDAP returned false.
+
+
+  /api/modify:
+    put:
+      summary: Changes an exiting element
+      description: changes an object with the specified operations and attributes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyEntry'
+      responses:
+        '200':
+          description: LDAP returned true.
+        '400':
+          description: The request JSON was not valid.
+        '404':
+          description: The DN does not exist.
+        '500':
+          description: LDAP returned false.
+
+#  /api/search:
+#    post:
+#      summary: Submits and LDAP search
+#      description: Provides the criteria necess for the seach.
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              search_base:
+#                type: string
+#              search_filter:
+#                type: string
+#              search_scope:
+#                type: string
+#              dereference_aliases:
+#                type: string
+#              attributes:
+#                type: array
+#                items: string
+#              size_limit:
+#                type: integer
+#              time_limit:
+#                type: integer
+#              types_only:
+#                type: boolean
+#              get_operational_attributes:
+#                type: boolean
+#              controls:
+#                type: array
+#                items: string
+#              paged_size:
+#                type: integer
+#              paged_criticality:
+#                type: boolean
+#              paged_cookie:
+#                type: object
+#          required:
+#            - search_base
+#            - search_filter
+#            - search_scope
+#      responses:
+#        '200':
+#          description: LDAP returned a response.
+#          application/json:
+#            type: array
+#            items: object
+#        '400':
+#          description: The request JSON was not valid.
+#        '500':
+#          descripiton: LDAP returned false.
+components:
+  schemas:
+    Attribute:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: object
+    AddEntry:
+      type: object
+      required:
+        - dn
+        - object_class
+        - attributes
+      properties:
+        dn:
+          type: string
+        object_class:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attribute'
+    ModifyAttribute:
+      type: object
+      required:
+        - name
+        - operation
+        - value
+      properties:
+        name:
+          type: string
+        value:
+          type: object
+    ModifyEntry:
+      type: object
+      required:
+        - dn
+        - changes
+      properties:
+        dn:
+          type: string
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operation'
+    Operation:
+      type: object
+      required:
+        - operation
+        - values
+      properties:
+        operation:
+          type: string
+        values:
+          type: array
+          items: string
+
+
+
+
+
+
+
+
