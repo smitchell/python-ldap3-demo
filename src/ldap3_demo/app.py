@@ -7,11 +7,12 @@ import os
 
 APP = Flask(__name__)
 
-logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../logging.conf'))
+logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../logging.conf'))
 logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
 
-config_json_path = os.path.normpath('config.json')
+config_json_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../..//config.json'))
+
 with open(config_json_path, "r") as json_file:
     cfg = json.load(json_file)
 
