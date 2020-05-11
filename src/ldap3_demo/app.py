@@ -3,8 +3,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from . import config
 from .routes import ldap_api
 
-APP = Flask(__name__)
-
+app = Flask(__name__)
 ### swagger specific ###
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     config.swagger_url,
@@ -13,31 +12,31 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
         'app_name': "Python-ldap-demo"
     }
 )
-APP.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config.swagger_url)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config.swagger_url)
 ### end swagger specific ###
 
-APP.register_blueprint(ldap_api.get_blueprint())
+app.register_blueprint(ldap_api.get_blueprint())
 
 
-@APP.errorhandler(400)
+@app.errorhandler(400)
 def handle_400_error(_error):
     """Return a http 400 error to client"""
     return make_response(jsonify({'error': 'Misunderstood'}), 400)
 
 
-@APP.errorhandler(401)
+@app.errorhandler(401)
 def handle_401_error(_error):
     """Return a http 401 error to client"""
     return make_response(jsonify({'error': 'Unauthorised'}), 401)
 
 
-@APP.errorhandler(404)
+@app.errorhandler(404)
 def handle_404_error(_error):
     """Return a http 404 error to client"""
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@APP.errorhandler(500)
+@app.errorhandler(500)
 def handle_500_error(_error):
     """Return a http 500 error to client"""
     return make_response(jsonify({'error': 'Server error'}), 500)
