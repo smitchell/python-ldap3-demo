@@ -2,7 +2,7 @@ import json
 
 from flask import jsonify
 
-from ldap3_demo.dtos.attribute_schema import AttributeSchema
+from ldap3_demo.schemas.attribute_schema import AttributeSchema
 
 
 def test_attribute_create():

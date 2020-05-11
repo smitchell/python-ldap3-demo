@@ -13,16 +13,16 @@ servers:
     description: Local testing
 
 paths:
-  /api/add:
+  /api/entries:
       post:
-        summary: Adds a new element
-        description: Creates a new object with the specified attributes
+        summary: Adds a new entry
+        description: Creates a new entry with the specified dn, object class and attributes
         requestBody:
           required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddEntry'
+                $ref: '#/components/schemas/AddEntryRequest'
         responses:
           '201':
             description: LDAP returned true.
@@ -31,17 +31,46 @@ paths:
           '500':
             descripiton: LDAP returned false.
 
-
-  /api/modify:
+  /api/entry/{dn}:
+    get:
+      summary: Returns and entry
+      description: Given a distinguished name, returns an entry
+      parameters:
+        - in: path
+          name: dn
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the user to get
+      responses:
+        '200':
+          description: LDAP returned true.
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Entry'
+        '400':
+          description: The request JSON was not valid.
+        '404':
+          description: The DN does not exist.
+        '500':
+          description: LDAP returned false.
     put:
-      summary: Changes an exiting element
+      summary: Changes an exiting entry
       description: changes an object with the specified operations and attributes
+      parameters:
+        - in: path
+          name: dn
+          schema:
+            type: string
+          required: true
+          description: Numeric ID of the user to get
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ModifyEntry'
+              $ref: '#/components/schemas/ModifyEntryRequest'
       responses:
         '200':
           description: LDAP returned true.
@@ -52,57 +81,28 @@ paths:
         '500':
           description: LDAP returned false.
 
-#  /api/search:
-#    post:
-#      summary: Submits and LDAP search
-#      description: Provides the criteria necess for the seach.
-#      requestBody:
-#        required: true
-#        content:
-#          application/json:
-#            schema:
-#              search_base:
-#                type: string
-#              search_filter:
-#                type: string
-#              search_scope:
-#                type: string
-#              dereference_aliases:
-#                type: string
-#              attributes:
-#                type: array
-#                items: string
-#              size_limit:
-#                type: integer
-#              time_limit:
-#                type: integer
-#              types_only:
-#                type: boolean
-#              get_operational_attributes:
-#                type: boolean
-#              controls:
-#                type: array
-#                items: string
-#              paged_size:
-#                type: integer
-#              paged_criticality:
-#                type: boolean
-#              paged_cookie:
-#                type: object
-#          required:
-#            - search_base
-#            - search_filter
-#            - search_scope
-#      responses:
-#        '200':
-#          description: LDAP returned a response.
-#          application/json:
-#            type: array
-#            items: object
-#        '400':
-#          description: The request JSON was not valid.
-#        '500':
-#          descripiton: LDAP returned false.
+
+  /api/search:
+    post:
+      summary: Searches LDAP for entries.
+      description: Provides the criteria necess for the seach.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchCriteria'
+      responses:
+        '200':
+          description: LDAP returned a response.
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/ArrayOfEntries'
+        '400':
+          description: The request JSON was not valid.
+        '500':
+          descripiton: LDAP returned false.
 components:
   schemas:
     Attribute:
@@ -114,8 +114,20 @@ components:
         name:
           type: string
         value:
-          type: object
-    AddEntry:
+          type: array
+          items: string
+
+    ArrayOfAttributes:
+      type: array
+      items:
+        '#/components/schemas/Attribute'
+
+    ArrayOfEntries:
+      type: array
+      items:
+        '#/components/schemas/Entry'
+
+    AddEntryRequest:
       type: object
       required:
         - dn
@@ -127,10 +139,19 @@ components:
         object_class:
           type: string
         attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Attribute'
-    ModifyAttribute:
+          type:
+            $ref: '#/components/schemas/ArrayOfAttributes'
+
+    Entry:
+      type: object
+      properties:
+        dn:
+          type: string
+        attributes:
+          type:
+            $ref: '#/components/schemas/ArrayOfAttributes'
+
+    ModifyEntryRequest:
       type: object
       required:
         - name
@@ -153,6 +174,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Operation'
+
     Operation:
       type: object
       required:
@@ -165,7 +187,51 @@ components:
           type: array
           items: string
 
-
+    SearchCriteria:
+      type: object
+      required:
+        - search_base
+        - search_filter
+        - search_scope
+      properties:
+        search_base:
+          type: string
+        search_filter:
+          type: string
+        search_scope:
+          type: string
+        dereference_aliases:
+          type: string
+        attributes:
+          type:
+            $ref: '#/components/schemas/ArrayOfAttributes'
+        size_limit:
+          type: integer
+        time_limit:
+          type: integer
+        types_only:
+          type: boolean
+        get_operational_attributes:
+          type: boolean
+        controls:
+          type: array
+          items: string
+        paged_size:
+          type: integer
+        paged_criticality:
+          type: boolean
+        paged_cookie:
+          type: object
+      responses:
+        '200':
+          description: LDAP returned a response.
+          application/json:
+            type: array
+            items: object
+        '400':
+          description: The request JSON was not valid.
+        '500':
+          descripiton: LDAP returned false.
 
 
 
