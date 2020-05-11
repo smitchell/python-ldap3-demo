@@ -33,7 +33,7 @@ paths:
 
   /api/entry/{dn}:
     get:
-      summary: Returns and entry
+      summary: Lookup an entry bt DN
       description: Given a distinguished name, returns an entry
       parameters:
         - in: path
@@ -56,7 +56,7 @@ paths:
         '500':
           description: LDAP returned false.
     put:
-      summary: Changes an exiting entry
+      summary: Modifies an exiting entry
       description: changes an object with the specified operations and attributes
       parameters:
         - in: path
@@ -84,7 +84,7 @@ paths:
 
   /api/search:
     post:
-      summary: Searches LDAP for entries.
+      summary: Searches entries by posted search criteria.
       description: Provides the criteria necess for the seach.
       requestBody:
         required: true
