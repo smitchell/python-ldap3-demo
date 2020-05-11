@@ -1,4 +1,4 @@
-from dtos.attribute import Attribute
+from ldap3_demo.dtos.attribute import Attribute
 
 
 def test_create_attribute():

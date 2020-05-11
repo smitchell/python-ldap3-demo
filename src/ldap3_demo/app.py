@@ -1,31 +1,19 @@
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
+from . import config
 from .routes import ldap_api
-import logging.config
-import json
-import os
 
 APP = Flask(__name__)
 
-logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../logging.conf'))
-logging.config.fileConfig(logging_conf_path)
-log = logging.getLogger(__name__)
-
-config_json_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../..//config.json'))
-
-with open(config_json_path, "r") as json_file:
-    cfg = json.load(json_file)
-
 ### swagger specific ###
-swagger = cfg['swagger']
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
-    swagger['url'],
-    swagger['api_url'],
+    config.swagger_url,
+    config.api_url,
     config={
         'app_name': "Python-ldap-demo"
     }
 )
-APP.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=swagger['url'])
+APP.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config.swagger_url)
 ### end swagger specific ###
 
 APP.register_blueprint(ldap_api.get_blueprint())
