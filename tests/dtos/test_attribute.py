@@ -1,0 +1,16 @@
+from ldap3_demo.dtos.attribute import Attribute
+
+
+def test_create_attribute():
+    print('test_create_attribute')
+
+    attribute = Attribute('My Attribute', ['My Value'])
+
+    expected = 'My Attribute'
+    actual = attribute.name
+    assert expected == actual
+
+    expected = ['My Value']
+    actual = attribute.values
+    assert expected == actual
+

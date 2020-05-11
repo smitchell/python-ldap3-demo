@@ -16,7 +16,7 @@ RUN /venv/bin/pytest
 
 FROM gcr.io/distroless/python3-debian10 AS runner
 COPY --from=tester /venv /venv
-COPY --from=tester /app /app
+COPY --from=tester / /app
 
 WORKDIR /app
 
