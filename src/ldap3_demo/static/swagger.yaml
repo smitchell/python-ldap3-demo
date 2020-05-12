@@ -57,7 +57,7 @@ paths:
           description: LDAP returned false.
     put:
       summary: Modifies an exiting entry
-      description: changes an object with the specified operations and attributes
+      description: See https://ldap3.readthedocs.io/en/latest/modify.html
       parameters:
         - in: path
           name: dn
@@ -122,13 +122,13 @@ paths:
           descripiton: LDAP returned false.
 components:
   schemas:
-    Attribute:
+    KeyValuePair:
       type: object
       required:
-        - name
+        - key
         - value
       properties:
-        name:
+        key:
           type: string
         value:
           type: string
@@ -147,7 +147,7 @@ components:
         attributes:
           type: array
           items:
-            '#/components/schemas/Attribute'
+            '#/components/schemas/KeyValuePair'
 
     Entry:
       type: object
@@ -157,20 +157,9 @@ components:
         attributes:
           type: array
           items:
-            '#/components/schemas/Attribute'
+            '#/components/schemas/KeyValuePair'
 
     ModifyEntryRequest:
-      type: object
-      required:
-        - name
-        - operation
-        - value
-      properties:
-        name:
-          type: string
-        value:
-          type: string
-    ModifyEntry:
       type: object
       required:
         - dn
@@ -181,19 +170,38 @@ components:
         changes:
           type: array
           items:
-            $ref: '#/components/schemas/Operation'
+            '#/components/schemas/Change'
 
     Operation:
       type: object
+      Description: https://ldap3.readthedocs.io/en/latest/modify.html
       required:
         - operation
         - values
       properties:
         operation:
           type: string
+          enum:
+            - MODIFY_ADD
+            - MODIFY_DELETE
+            - MODIFY_REPLACE
+            - MODIFY_INCREMENT
         values:
           type: array
           items: string
+
+    Change:
+      type: object
+      required:
+        - attribute_name
+        - operations
+      properties:
+        attribute_name:
+          type: string
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Operation'
 
     SearchCriteria:
       type: object

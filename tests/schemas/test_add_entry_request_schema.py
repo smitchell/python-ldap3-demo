@@ -1,23 +1,20 @@
-import json
 
-from flask import jsonify
-
-from ldap3_demo.dtos.attribute import Attribute
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
-from ldap3_demo.schemas.attribute_schema import AttributeSchema
+
 schema = AddEntryRequestSchema()
 
 data = {
     'dn': 'a dn',
     'object_class': 'inetOrgPerson',
     'attributes': [
-        {'name': 'dn', 'value': 'a dn'},
-        {'name': 'object_class', 'value': 'inetOrgPerson'},
-        {'name': 'object_class', 'value': 'user'},
-        {'name': 'mail', 'value': 'bob@company.com'},
-        {'name': 'first_name', 'value': 'Bob'},
-        {'name': 'last_name', 'value': 'Marley'}]
+        {'key': 'dn', 'value': 'a dn'},
+        {'key': 'object_class', 'value': 'inetOrgPerson'},
+        {'key': 'object_class', 'value': 'user'},
+        {'key': 'mail', 'value': 'bob@company.com'},
+        {'key': 'first_name', 'value': 'Bob'},
+        {'key': 'last_name', 'value': 'Marley'}]
 }
+
 
 def test_add_entry_request_create():
     print('test_add_entry_request_create')

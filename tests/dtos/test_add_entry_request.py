@@ -1,17 +1,17 @@
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
-from ldap3_demo.dtos.attribute import Attribute
+from ldap3_demo.dtos.key_value_pair import KeyValuePair
 
 
 def test_create_add_entry_request():
     print('test_create_add_entry_request')
 
     attributes = [
-        Attribute('dn', 'a dn'),
-        Attribute('object_class', 'inetOrgPerson'),
-        Attribute('object_class', 'user'),
-        Attribute('mail', 'bob@company.com'),
-        Attribute('first_name', 'Bob'),
-        Attribute('last_name', 'Marley')]
+        KeyValuePair('dn', 'a dn'),
+        KeyValuePair('object_class', 'inetOrgPerson'),
+        KeyValuePair('object_class', 'user'),
+        KeyValuePair('mail', 'bob@company.com'),
+        KeyValuePair('first_name', 'Bob'),
+        KeyValuePair('last_name', 'Marley')]
 
     add_entry_request = AddEntryRequest('a dn', 'inetOrgPerson', attributes)
 
