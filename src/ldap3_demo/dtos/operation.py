@@ -1,5 +1,3 @@
-
-
 class Operation:
 
     def __init__(self, operation_type, values):

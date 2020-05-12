@@ -4,15 +4,13 @@ from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 schema = AddEntryRequestSchema()
 
 data = {
-    'dn': 'a dn',
-    'object_class': 'inetOrgPerson',
-    'attributes': [
-        {'key': 'dn', 'value': 'a dn'},
-        {'key': 'object_class', 'value': 'inetOrgPerson'},
-        {'key': 'object_class', 'value': 'user'},
-        {'key': 'mail', 'value': 'bob@company.com'},
-        {'key': 'first_name', 'value': 'Bob'},
-        {'key': 'last_name', 'value': 'Marley'}]
+    'dn': 'cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com',
+    'object_class': 'inetOrgPerson,user,supervisor',
+    'attributes': {
+        'dn': 'a dn',
+        'mail': 'bob@company.com',
+        'first_name': 'Bob',
+        'last_name': 'Marley'}
 }
 
 

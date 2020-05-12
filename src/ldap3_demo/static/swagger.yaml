@@ -42,6 +42,8 @@ paths:
             type: string
           required: true
           description: Distinguished Name of the entry to get
+          example:
+            cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
       responses:
         '200':
           description: LDAP returned true.
@@ -65,6 +67,8 @@ paths:
             type: string
           required: true
           description: Distinguished Name of the entry to update
+          example:
+            cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
       requestBody:
         required: true
         content:
@@ -90,6 +94,8 @@ paths:
             type: string
           required: true
           description: Distinguished Name of the entry to delete
+          example:
+            cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
       responses:
         '204':
           description: OK.
@@ -122,17 +128,6 @@ paths:
           descripiton: LDAP returned false.
 components:
   schemas:
-    KeyValuePair:
-      type: object
-      required:
-        - key
-        - value
-      properties:
-        key:
-          type: string
-        value:
-          type: string
-
     AddEntryRequest:
       Summary: Represents a request to add an new entry.
       Description: This is the distinguished name, object class,s and attributes, and controls (optional) for a new LDAP entry.
@@ -145,14 +140,29 @@ components:
         dn:
           discription: The distinguished name for this entry. It must be unique.
           type: string
+          example:
+            cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
         object_class:
           description:  A comma delimited string of object classes.
           type: string
+          example:
+            inetOrgPerson
         attributes:
-          description: The list of attributes and values to be added.
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
+          description: The dictionary of attributes and values to be added.
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            cn: mwatkins
+            dn: cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
+            first_name: Mike
+            last_name: Watkins
+        controls:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            LDAP_CONTROL_PWEXPIRED: true
 
     Entry:
       type: object
@@ -160,10 +170,18 @@ components:
       properties:
         dn:
           type: string
+          example:
+            cn=mgrables,ou=employees,ou=finance,dc=acme,dc=com
         attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            cn: mgrables
+            dn: cn=mgrables,ou=employees,ou=finance,dc=acme,dc=com
+            first_name: Maxine
+            last_name: Gables
+            mail: m.gables@company.com
 
     ModifyEntryRequest:
       type: object
@@ -175,14 +193,22 @@ components:
       properties:
         dn:
           type: string
+          example:
+            cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
         changes:
           type: array
           items:
             $ref: '#/components/schemas/Change'
+          examples:
+            attribute: email
+
         controls:
-          type: array
-          items:
-            $ref: '#/components/schemas/KeyValuePair'
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            LDAP_CONTROL_PWEXPIRED: true
+
 
     Operation:
       type: object
