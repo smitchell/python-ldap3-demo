@@ -5,7 +5,7 @@ from ldap3_demo.dtos.attribute import Attribute
 
 class AttributeSchema(Schema):
     name = fields.Str()
-    values = fields.List(fields.Str())
+    value = fields.Str()
 
     @post_load
     def create_attribute(self, data, **kwargs):

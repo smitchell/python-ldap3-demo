@@ -33,7 +33,7 @@ paths:
 
   /api/entry/{dn}:
     get:
-      summary: Lookup an entry bt DN
+      summary: Lookup an entry by DN
       description: Given a distinguished name, returns an entry
       parameters:
         - in: path
@@ -41,7 +41,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Numeric ID of the user to get
+          description: Distinguished Name of the entry to get
       responses:
         '200':
           description: LDAP returned true.
@@ -64,7 +64,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Numeric ID of the user to get
+          description: Distinguished Name of the entry to update
       requestBody:
         required: true
         content:
@@ -80,6 +80,21 @@ paths:
           description: The DN does not exist.
         '500':
           description: LDAP returned false.
+    delete:
+      summary: Delete an entry by DN
+      description: Given a distinguished name, deletes an entry
+      parameters:
+        - in: path
+          name: dn
+          schema:
+            type: string
+          required: true
+          description: Distinguished Name of the entry to delete
+      responses:
+        '204':
+          description: OK.
+        '500':
+          description: LDAP returned false.          
 
 
   /api/search:
@@ -97,8 +112,10 @@ paths:
           description: LDAP returned a response.
           content:
             application/json:
-                schema:
-                  $ref: '#/components/schemas/ArrayOfEntries'
+              schema:
+                type: array
+                items:
+                  '#/components/schemas/Entry'
         '400':
           description: The request JSON was not valid.
         '500':
@@ -114,18 +131,7 @@ components:
         name:
           type: string
         value:
-          type: array
-          items: string
-
-    ArrayOfAttributes:
-      type: array
-      items:
-        '#/components/schemas/Attribute'
-
-    ArrayOfEntries:
-      type: array
-      items:
-        '#/components/schemas/Entry'
+          type: string
 
     AddEntryRequest:
       type: object
@@ -139,8 +145,9 @@ components:
         object_class:
           type: string
         attributes:
-          type:
-            $ref: '#/components/schemas/ArrayOfAttributes'
+          type: array
+          items:
+            '#/components/schemas/Attribute'
 
     Entry:
       type: object
@@ -148,8 +155,9 @@ components:
         dn:
           type: string
         attributes:
-          type:
-            $ref: '#/components/schemas/ArrayOfAttributes'
+          type: array
+          items:
+            '#/components/schemas/Attribute'
 
     ModifyEntryRequest:
       type: object
@@ -161,7 +169,7 @@ components:
         name:
           type: string
         value:
-          type: object
+          type: string
     ModifyEntry:
       type: object
       required:
@@ -203,8 +211,9 @@ components:
         dereference_aliases:
           type: string
         attributes:
-          type:
-            $ref: '#/components/schemas/ArrayOfAttributes'
+          type: array
+          items:
+            type: string
         size_limit:
           type: integer
         time_limit:
@@ -225,9 +234,12 @@ components:
       responses:
         '200':
           description: LDAP returned a response.
-          application/json:
-            type: array
-            items: object
+          content:
+            application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Entry'
         '400':
           description: The request JSON was not valid.
         '500':

@@ -1,9 +1,9 @@
 
 class Attribute:
 
-    def __init__(self, name, values):
+    def __init__(self, name, value):
         self.name = name
-        self.values = values
+        self.value = value
 
 
 

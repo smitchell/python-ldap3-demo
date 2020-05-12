@@ -1,38 +1,33 @@
-import json
-
-from flask import jsonify
 
 from ldap3_demo.schemas.attribute_schema import AttributeSchema
+
+schema = AttributeSchema()
+data = {
+    "name": 'A name',
+    "value": 'A value'
+}
 
 
 def test_attribute_create():
     print('test_attribute_create')
-    attribute_schema = AttributeSchema()
-    data = {
-        "name": 'A name',
-        "values": ['A value']
-    }
-    attribute = attribute_schema.load(data)
+
+    attribute = schema.load(data)
 
     assert attribute.name == data['name']
-    assert attribute.values == data['values']
+    assert attribute.value == data['value']
 
 
 def test_attribute_dump():
     print('test_attribute_dump')
-    attribute_schema = AttributeSchema()
-    data = {
-        "name": 'A name',
-        "values": ['A value']
-    }
-    attribute = attribute_schema.load(data)
+
+    attribute = schema.load(data)
 
     assert attribute.name == data['name']
-    assert attribute.values == data['values']
+    assert attribute.value == data['value']
 
-    output = attribute_schema.dump(attribute)
+    output = schema.dump(attribute)
     assert output is not None
 
     assert output['name'] == data['name']
-    assert output['values'] == data['values']
+    assert output['value'] == data['value']
 
