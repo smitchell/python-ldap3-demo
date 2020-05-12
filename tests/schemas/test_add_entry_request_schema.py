@@ -14,8 +14,8 @@ data = {
 }
 
 
-def test_add_entry_request_create():
-    print('test_add_entry_request_create')
+def test_add_entry_request_load():
+    print('test_add_entry_request_load')
 
     add_entry_request = schema.load(data)
 

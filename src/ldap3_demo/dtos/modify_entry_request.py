@@ -4,4 +4,3 @@ class ModifyEntryRequest:
         self.dn = dn
         self.changes = changes
         self.controls = controls
-

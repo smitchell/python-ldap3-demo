@@ -1,8 +1,8 @@
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 
 
-def test_create_add_entry_request():
-    print('test_create_add_entry_request')
+def test_create_add_entry_request_dto():
+    print('test_create_add_entry_request_dto')
 
     attributes = {
         'dn': 'cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com',
