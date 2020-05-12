@@ -1,0 +1,8 @@
+from enum import Enum
+
+
+class OperationType(Enum):
+    MODIFY_ADD = 'MODIFY_ADD'
+    MODIFY_DELETE = 'MODIFY_DELETE'
+    MODIFY_REPLACE = 'MODIFY_REPLACE'
+    MODIFY_INCREMENT = 'MODIFY_INCREMENT'

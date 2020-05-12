@@ -4,10 +4,9 @@ from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 from ldap3_demo.schemas.key_value_pair_schema import KeyValuePairSchema
 
 
-class AddEntryRequestSchema(Schema):
+class ModifyEntryRequestSchema(Schema):
     dn = fields.Str()
-    object_class = fields.Str()
-    attributes = fields.List(fields.Nested(KeyValuePairSchema), required=True)
+    changes = fields.List(fields.Nested(KeyValuePairSchema), required=True)
     controls = fields.List(fields.Nested(KeyValuePairSchema), allow_none=True)
 
     @post_load
