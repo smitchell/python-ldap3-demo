@@ -3,9 +3,9 @@ from ldap3_demo.schemas.modify_entry_request_schema import ModifyEntryRequestSch
 schema = ModifyEntryRequestSchema()
 
 data = {
-    'dn': 'cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com',
+    'dn': 'cn=mwatkins,ou=employees,ou=test,o=lab',
     'changes': {
-        'phone': [
+        'mobile': [
             {'MODIFY_ADD': ['913-222-3344']}
         ]
     }
