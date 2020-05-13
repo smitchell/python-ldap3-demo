@@ -27,35 +27,25 @@ attributes = {
     'labeledURI': 'http://www.comapny.com/users/mwatkins My Home Page'
 }
 
-def test_add_with_controller():
+def test_add_user_with_controller():
 
     connection = Connection(server, user='cn=my_user,ou=test,o=lab', password='my_password', client_strategy=MOCK_SYNC)
     connection.bind()
 
-    dn = 'cn=employees,ou=test,o=lab'
-    connection.add(dn, 'organizationalUnit')
-    result_description = connection.result["description"]
-    assert result_description == 'success', f'Add {dn} failed.{result_description}'
-    assert connection.last_error is None, f'An error occurred adding {dn}. {connection.last_error}'
-    print(f'Successfully added {dn}')
+    # Build out the fake organization
+    controller = LdapController()
+    add_entry_request = schema.load({'dn': 'cn=employees,ou=test,o=lab', 'object_class': 'organizationalUnit'})
+    controller.add(connection, add_entry_request)
+    add_entry_request = schema.load({'dn': 'cn=users,cn=employees,ou=test,o=lab', 'object_class': 'organizationalUnit'})
+    controller.add(connection, add_entry_request)
 
-    dn = 'cn=users,cn=employees,ou=test,o=lab'
-    connection.add(dn, 'organizationalUnit')
-    result_description = connection.result["description"]
-    assert result_description == 'success', f'Add {dn} failed. {result_description}'
-    assert connection.last_error is None, f'An error occurred adding {dn}. {connection.last_error}'
-    print(f'Successfully added {dn}')
+    # Pass the new user data to the controller
 
-    dn = 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab'
-
-    data = {
+    add_entry_request = schema.load({
         'dn': 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab',
         'object_class': 'top,person,organizationalPerson,inetOrgPerson',
         'attributes': attributes
-    }
-
-    controller = LdapController()
-    add_entry_request = schema.load(data)
+    })
     result = controller.add(connection, add_entry_request)
     assert result, 'There was a problem adding the user'
     dn = add_entry_request.dn

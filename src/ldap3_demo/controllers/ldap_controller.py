@@ -35,6 +35,10 @@ class LdapController:
             controls = json['controls']
             if controls is None or controls == 'None' or len(controls) == 0:
                 del json['controls']
+        if 'attributes' in json:
+            attributes = json['attributes']
+            if attributes is None or attributes == 'None' or len(attributes) == 0:
+                del json['attributes']
 
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
@@ -43,11 +47,17 @@ class LdapController:
 
         json = schema.dump(add_entry_request)
         LdapController.scrub_json(json)
-        attributes = json['attributes']
+
         if 'controls' in json:
-            connection.add(add_entry_request.dn, json['object_class'], attributes, json['controls'])
+            if 'attributes' in json:
+                connection.add(add_entry_request.dn, json['object_class'], json['attributes'], json['controls'])
+            else:
+                connection.add(add_entry_request.dn, json['object_class'], None, json['controls'])
+        elif 'attributes' in json:
+            connection.add(add_entry_request.dn, json['object_class'], json['attributes'])
         else:
-            connection.add(add_entry_request.dn, json['object_class'], attributes)
+            # connection.add('cn=employees,ou=test,o=lab', 'organizationalUnit')
+            connection.add(add_entry_request.dn, json['object_class'])
 
         result_description = connection.result["description"]
         if result_description == 'entryAlreadyExists':

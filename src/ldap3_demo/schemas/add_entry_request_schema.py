@@ -7,7 +7,7 @@ from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 class AddEntryRequestSchema(Schema):
     dn = fields.Str()
     object_class = fields.Str()
-    attributes = fields.Dict(keys=fields.Str(), values=fields.Str())
+    attributes = fields.Dict(keys=fields.Str(), values=fields.Str(), allow_none=True)
     controls = fields.Dict(keys=fields.Str(), values=fields.Str(), allow_none=True)
 
     @post_load
