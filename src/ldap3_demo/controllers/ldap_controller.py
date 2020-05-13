@@ -9,7 +9,7 @@ class LdapController:
 
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
-    def add_entry(self, connection: Connection, add_entry_request: AddEntryRequest):
+    def add(self, connection: Connection, add_entry_request: AddEntryRequest):
         schema = AddEntryRequestSchema()
         # exists = connection.search(add_entry_request.basedn, f'(dn={add_entry_request.dn})', 'SUBTREE', 'DEREF_NEVER', 'dn')
         # if exists is not None:
