@@ -1,7 +1,6 @@
 class AddEntryRequest:
 
-    def __init__(self, basedn, dn, object_class, attributes, controls=None):
-        self.basedn = basedn
+    def __init__(self, dn, object_class, attributes, controls=None):
         self.dn = dn
         self.object_class = object_class
         self.attributes = attributes

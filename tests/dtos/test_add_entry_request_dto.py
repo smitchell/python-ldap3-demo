@@ -27,7 +27,7 @@ def test_create_add_entry_request_dto():
             'labeledURI': 'http://www.comapny.com/users/mwatkins My Home Page'
         }
 
-    add_entry_request = AddEntryRequest('ou=test,o=lab', 'cn=mwatkins,ou=employees,ou=test,o=lab',
+    add_entry_request = AddEntryRequest('cn=mwatkins,ou=employees,ou=test,o=lab',
                                         'top, person, organizationalPerson, inetOrgPerson', attributes)
 
     assert add_entry_request.attributes == attributes

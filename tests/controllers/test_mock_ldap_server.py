@@ -12,6 +12,7 @@ attributes = {
     'ou': 'test',
     'sn': 'Watkins',
     'uid': 'mwatkins',
+    'objectClass': 'person, organizationalPerson, inetOrgPerson',
     'givenName': 'Margaret',
     'initials': 'MPW',
     'displayName': 'Margie Watkins',
@@ -27,7 +28,7 @@ attributes = {
     'labeledURI': 'http://www.comapny.com/users/mwatkins My Home Page'
 }
 
-def test_add_with_controller():
+def test_direct_add_with_mocked_date():
 
     connection = Connection(server, user='cn=my_user,ou=test,o=lab', password='my_password', client_strategy=MOCK_SYNC)
     connection.bind()
@@ -42,30 +43,24 @@ def test_add_with_controller():
     dn = 'cn=users,cn=employees,ou=test,o=lab'
     connection.add(dn, 'organizationalUnit')
     result_description = connection.result["description"]
-    assert result_description == 'success', f'Add {dn} failed. {result_description}'
+    assert result_description == 'success', f'Add {dn} failed.{result_description}'
     assert connection.last_error is None, f'An error occurred adding {dn}. {connection.last_error}'
     print(f'Successfully added {dn}')
 
     dn = 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab'
 
-    data = {
-        'dn': 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab',
-        'object_class': 'top,person,organizationalPerson,inetOrgPerson',
-        'attributes': attributes
-    }
-
-    controller = LdapController()
-    add_entry_request = schema.load(data)
-    result = controller.add(connection, add_entry_request)
-    assert result, 'There was a problem adding the user'
-    dn = add_entry_request.dn
+    connection.add(dn, 'person, organizationalPerson, inetOrgPerson', attributes)
+    result_description = connection.result["description"]
+    assert result_description == 'success', f'Add {dn} failed. {result_description}'
+    assert connection.last_error is None, f'An error occurred adding {dn}. {connection.last_error}'
 
     connection.search(search_base=dn,
-                      search_filter='(objectClass=*)',
-                      search_scope=BASE,
-                      attributes=ALL_ATTRIBUTES)
+                               search_filter='(objectClass=*)',
+                               search_scope=BASE,
+                               attributes=ALL_ATTRIBUTES)
     result_description = connection.result["description"]
     assert result_description == 'success', f'Searching for {dn} failed. {result_description}'
     assert connection.last_error is None, f'An error occurred searching for {dn}. {connection.last_error}'
     total_results = len(connection.entries)
     assert total_results == 1, f'Expected 1 search result for {dn} but found {total_results}'
+

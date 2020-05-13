@@ -5,7 +5,6 @@ from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 
 
 class AddEntryRequestSchema(Schema):
-    basedn = fields.Str()
     dn = fields.Str()
     object_class = fields.Str()
     attributes = fields.Dict(keys=fields.Str(), values=fields.Str())

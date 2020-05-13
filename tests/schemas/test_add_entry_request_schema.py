@@ -4,11 +4,9 @@ from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 schema = AddEntryRequestSchema()
 
 data = {
-    'basedn': 'ou=test,o=lab',
     'dn': 'cn=mwatkins,ou=employees,ou=test,o=lab',
-    'object_class': 'top, person, organizationalPerson, inetOrgPerson',
+    'object_class': 'person,organizationalPerson,inetOrgPerson',
     'attributes': {
-            'version': '1',
             'cn': 'Margaret Watkins, Margie Watkins',
             'dn': 'cn=mwatkins,ou=employees,ou=test,o=lab',
             'o': 'lab',
@@ -37,7 +35,6 @@ def test_add_entry_request_load():
 
     add_entry_request = schema.load(data)
 
-    assert add_entry_request.basedn == data['basedn']
     assert add_entry_request.dn == data['dn']
     assert add_entry_request.object_class == data['object_class']
 
