@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from flask import Response
 from ldap3 import Server, Connection, ALL, BASE, ALL_ATTRIBUTES
 from ldap3.utils.conv import escape_filter_chars
@@ -10,7 +12,7 @@ from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 class LdapController:
 
     @staticmethod
-    def scrub_json(source):
+    def scrub_json(source) -> None:
         if 'controls' in source:
             controls = source['controls']
             if controls is None or controls == 'None' or len(controls) == 0:
@@ -39,18 +41,20 @@ class LdapController:
 
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
-    def add(self, connection: Connection, add_entry_request: AddEntryRequest):
+    def add(self, connection: Connection, add_entry_request: AddEntryRequest) -> bool:
         schema = AddEntryRequestSchema()
 
         json = schema.dump(add_entry_request)
 
         if 'controls' in json:
             if 'attributes' in json and json['attributes'] is not None:
-                connection.add(add_entry_request.dn, json['object_class'], LdapController.scrub_dict(json['attributes'], True), json['controls'])
+                connection.add(add_entry_request.dn, json['object_class'],
+                               LdapController.scrub_dict(json['attributes'], True), json['controls'])
             else:
                 connection.add(add_entry_request.dn, json['object_class'], None, json['controls'])
         elif 'attributes' in json and json['attributes'] is not None:
-            connection.add(add_entry_request.dn, json['object_class'], LdapController.scrub_dict(json['attributes'], True))
+            connection.add(add_entry_request.dn, json['object_class'],
+                           LdapController.scrub_dict(json['attributes'], True))
         else:
             connection.add(add_entry_request.dn, json['object_class'])
 
@@ -69,9 +73,20 @@ class LdapController:
 
         return True
 
-    def search(self, connection: Connection, search):
-        criteria = self.scrub_dict(search)
-        connection.search(**criteria)
+    def search(self, connection: Connection, s: Search) -> list:
+        connection.search(search_base=s.search_base,
+                          search_filter=s.search_filter,
+                          search_scope=s.search_scope,
+                          dereference_aliases=s.dereference_aliases,
+                          attributes=s.attributes,
+                          size_limit=s.size_limit,
+                          time_limit=s.time_limit,
+                          types_only=s.types_only,
+                          get_operational_attributes=s.get_operational_attributes,
+                          controls=s.controls,
+                          paged_size=s.paged_size,
+                          paged_criticality=s.paged_criticality,
+                          paged_cookie=s.paged_cookie)
         if connection.result["description"] != 'success':
             return Response(
                 f'A search error occurred: {connection.last_error}',

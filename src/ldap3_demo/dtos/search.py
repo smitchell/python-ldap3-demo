@@ -1,7 +1,7 @@
 from ldap3 import SUBTREE, DEREF_ALWAYS, BASE, LEVEL, SUBTREE, DEREF_NEVER, DEREF_SEARCH, DEREF_BASE, ALL_ATTRIBUTES, \
     ALL_OPERATIONAL_ATTRIBUTES
 
-search_base_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
+search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
 
 dereference_aliases_types = dict(
     DEREF_NEVER=DEREF_NEVER,
@@ -26,9 +26,9 @@ class Search:
                  paged_size=None,
                  paged_criticality=False,
                  paged_cookie=None):
-        self.search_base = search_base_types[search_base]
+        self.search_base = search_base
         self.search_filter = search_filter
-        self.search_scope = search_scope
+        self.search_scope = search_scope_types[search_scope]
         self.dereference_aliases = dereference_aliases_types[dereference_aliases]
         if attributes == 'ALL_ATTRIBUTES':
             self.attributes = ALL_ATTRIBUTES
