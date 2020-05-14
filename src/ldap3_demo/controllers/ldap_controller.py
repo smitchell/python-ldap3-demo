@@ -1,7 +1,8 @@
-from pprint import pprint
+from typing import Any
 
 from flask import Response
-from ldap3 import Server, Connection, ALL, BASE, ALL_ATTRIBUTES
+from ldap3 import Connection
+from ldap3.core.exceptions import LDAPInvalidDnError
 from ldap3.utils.conv import escape_filter_chars
 
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
@@ -94,3 +95,12 @@ class LdapController:
             )
 
         return connection.entries
+
+    def delete(self, connection: Connection, dn: Any, controls: Any = None) -> bool:
+        try:
+            return connection.delete(dn, controls=controls)
+        except LDAPInvalidDnError:
+            # Ignore error if the dn does not exist.
+            return True
+
+
