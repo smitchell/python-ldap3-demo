@@ -1,144 +1,44 @@
-# Blueprint/Boilerplate For Python Projects
+# LDAP3 Demo
 
-[![Build, Test and Lint Action](https://github.com/MartinHeinz/python-project-blueprint/workflows/Build,%20Test,%20Lint/badge.svg)](https://github.com/MartinHeinz/python-project-blueprint/workflows/Build,%20Test,%20Lint/badge.svg)
-[![Push Action](https://github.com/MartinHeinz/python-project-blueprint/workflows/Push/badge.svg)](https://github.com/https://github.com/MartinHeinz/python-project-blueprint/workflows/Push/badge.svg)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/05c44c881bc10a706cbc/test_coverage)](https://codeclimate.com/github/MartinHeinz/python-project-blueprint/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/05c44c881bc10a706cbc/maintainability)](https://codeclimate.com/github/MartinHeinz/python-project-blueprint/maintainability)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=MartinHeinz_python-project-blueprint&metric=alert_status)](https://sonarcloud.io/dashboard?id=MartinHeinz_python-project-blueprint)
+This is generic wrapper for LDAP3. I am looking at whether a generic template could be used for
+OpenLDAP, Active Directory, Novell, etc where the only difference was logic to discover
+and manage servers. The other reason for separating the microservices by backing service
+would be to use vendor specific LDAP extensions.
 
-## Blog Posts - More Information About This Repo
+A core principle of this POC is one microservice per LDAP backing service. Of course, this
+could be done in a single LDAP microservice, but that would increase the complexity. 
+Also, you could argue it would infringe on The Twelve Factors because deploying a bug fix 
+for Active Directory could affect OpenLdap services too. 
 
-You can find more information about this project/repository and how to use it in following blog post:
+## TECHNOLOGIES
+This project uses the following libraries.
+* Flask
+* Ldap3
+* Marshmallow
+* Pytest
+* Swagger
 
-- [Ultimate Setup for Your Next Python Project](https://towardsdatascience.com/ultimate-setup-for-your-next-python-project-179bda8a7c2c)
-- [Automating Every Aspect of Your Python Project](https://towardsdatascience.com/automating-every-aspect-of-your-python-project-6517336af9da)
-- [Deploy Any Python Project to Kubernetes](https://towardsdatascience.com/deploy-any-python-project-to-kubernetes-2c6ad4d41f14)
+## RUNNING LOCALLY
 
-## Quick Start
-To use this repository as starter for your project you can run `configure_project.sh` script, which sets up all variables and file names. This way you can avoid configuring and renaming things yourself:
+1) python3 -m venv --copies venv
+2) source venv/bin/activate
+3) pip install -r app/requirements.txt
+4) pip install .
+5) make test
+6) make run
+7: http://localhost:5000/api/doc
 
-```shell
-./configure_project.sh MODULE="coolproject" REGISTRY="docker.pkg.github.com/martinheinz/repo-name"
-```
+# RESOURCES
+These are the references I used in structuring this project. Full disclosure, I wrote Java
+for 20 years, so you won't find a models.py file. I give every class its own file and
+it's own test file.
 
-## Running
+I started with [Martin Heinz's](https://martinheinz.dev/) project blueprint, folded in ideas from 
+[Sean Bradley's](https://github.com/Sean-Bradley) Flask Rest boilerplate, and then I refactored the project test packaging 
+as proposed by [Ionel Cristian Mărieș](https://blog.ionelmc.ro/about/).
 
-### Using Python Interpreter
-```shell
-~ $ make run
-```
-
-### Using Docker
-
-Development image:
-```console
-~ $ make build-dev
-~ $ docker images --filter "label=name=blueprint"
-REPOSITORY                                                             TAG                 IMAGE ID            CREATED             SIZE
-docker.pkg.github.com/martinheinz/python-project-blueprint/blueprint   3492a40-dirty       acf8d09acce4        28 seconds ago      967MB
-~ $ docker run acf8d09acce4
-Hello World...
-```
-
-Production (Distroless) image:
-```console
-~ $ make build-prod VERSION=0.0.5
-~ $ docker images --filter "label=version=0.0.5"
-REPOSITORY                                                             TAG                 IMAGE ID            CREATED             SIZE
-docker.pkg.github.com/martinheinz/python-project-blueprint/blueprint   0.0.5               65e6690d9edd        5 seconds ago       86.1MB
-~ $ docker run 65e6690d9edd
-Hello World...
-```
-
-## Testing
-
-Test are ran every time you build _dev_ or _prod_ image. You can also run tests using:
-
-```console
-~ $ make test
-```
-
-## Pushing to GitHub Package Registry
-
-```console
-~ $ docker login docker.pkg.github.com --username MartinHeinz
-Password: ...
-...
-Login Succeeded
-~ $ make push VERSION=0.0.5
-```
-
-## Cleaning
-
-Clean _Pytest_ and coverage cache/files:
-
-```console
-~ $ make clean
-```
-
-Clean _Docker_ images:
-
-```console
-~ $ make docker-clean
-```
-
-## Kubernetes
-
-Application can be easily deployed on _k8s_ using _KinD_.
-
-To create cluster and/or view status:
-
-```console
-~ $ make cluster
-```
-
-To deploy application to local cluster:
-
-```console
-~ $ make deploy-local
-```
-
-To get debugging information of running application:
-
-```console
-~ $ make cluster-debug
-```
-
-To get remote shell into application pod:
-
-```console
-~ $ make cluster-rsh
-```
-
-To apply/update _Kubernetes_ manifest stored in `k8s` directory:
-
-```console
-~ $ make manifest-update
-```
-
-## Setting Up Sonar Cloud
-- Navigate to <https://sonarcloud.io/projects>
-- Click _plus_ in top right corner -> analyze new project
-- Setup with _other CI tool_ -> _other_ -> _Linux_
-- Copy `-Dsonar.projectKey=` and `-Dsonar.organization=`
-    - These 2 values go to `sonar-project.properties` file
-- Click pencil at bottom of `sonar-scanner` command
-- Generate token and save it
-- Go to repo -> _Settings_ tab -> _Secrets_ -> _Add a new secret_
-    - name: `SONAR_TOKEN`
-    - value: _Previously copied token_
-    
-## Creating Secret Tokens
-Token is needed for example for _GitHub Package Registry_. To create one:
-
-- Go to _Settings_ tab
-- Click _Secrets_
-- Click _Add a new secret_
-    - _Name_: _name that will be accessible in GitHub Actions as `secrets.NAME`_
-    - _Value_: _value_
-
-### Resources
-- <https://realpython.com/python-application-layouts/>
-- <https://dev.to/codemouse92/dead-simple-python-project-structure-and-imports-38c6>
-- <https://github.com/navdeep-G/samplemod/blob/master/setup.py>
-- <https://github.com/GoogleContainerTools/distroless/blob/master/examples/python3/Dockerfile>
+* https://github.com/ionelmc/cookiecutter-pylibrary
+* https://blog.ionelmc.ro/2014/05/25/python-packaging/#the-structure
+* https://towardsdatascience.com/ultimate-setup-for-your-next-python-project-179bda8a7c2c
+* https://github.com/Sean-Bradley/Seans-Python3-Flask-Rest-Boilerplate
+* https://github.com/MartinHeinz/python-project-blueprint
