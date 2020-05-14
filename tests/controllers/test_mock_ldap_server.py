@@ -12,7 +12,7 @@ attributes = {
     'ou': 'test',
     'sn': 'Watkins',
     'uid': 'mwatkins',
-    'objectClass': 'person, organizationalPerson, inetOrgPerson',
+    'objectClass': ['person', 'organizationalPerson', 'inetOrgPerson'],
     'givenName': 'Margaret',
     'initials': 'MPW',
     'displayName': 'Margie Watkins',
@@ -49,7 +49,7 @@ def test_direct_add_with_mocked_date():
 
     dn = 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab'
 
-    connection.add(dn, 'person, organizationalPerson, inetOrgPerson', attributes)
+    connection.add(dn, ['person', 'organizationalPerson', 'inetOrgPerson'], attributes)
     result_description = connection.result["description"]
     assert result_description == 'success', f'Add {dn} failed. {result_description}'
     assert connection.last_error is None, f'An error occurred adding {dn}. {connection.last_error}'

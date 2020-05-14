@@ -43,7 +43,7 @@ def test_add_user_with_controller():
 
     add_entry_request = schema.load({
         'dn': 'cn=mwatkins,cn=users,cn=employees,ou=test,o=lab',
-        'object_class': 'top,person,organizationalPerson,inetOrgPerson',
+        'object_class': ['top,person', 'organizationalPerson', 'inetOrgPerson'],
         'attributes': attributes
     })
     result = controller.add(connection, add_entry_request)

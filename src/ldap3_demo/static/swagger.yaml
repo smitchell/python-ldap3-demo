@@ -144,23 +144,28 @@ components:
             cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
         object_class:
           description:  A comma delimited string of object classes.
-          type: string
+          oneOf:
+            - type: string
+            - type: array
+                items: string
           example:
             inetOrgPerson
         attributes:
           description: The dictionary of attributes and values to be added.
-          type: object
-          additionalProperties:
-            type: string
+          oneOf:
+            - type: string
+            - type: array
+                items: string
           example:
             cn: mwatkins
             dn: cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
             first_name: Mike
             last_name: Watkins
         controls:
-          type: object
-          additionalProperties:
-            type: string
+          oneOf:
+            - type: string
+            - type: array
+                items: string
           example:
             LDAP_CONTROL_PWEXPIRED: true
 
@@ -252,33 +257,68 @@ components:
       properties:
         search_base:
           type: string
+          example: cn=employees,ou=test,o=lab
         search_filter:
           type: string
+          example: (objectClass=organizationalUnit)
         search_scope:
           type: string
+          enum:
+            - BASE
+            - LEVEL=LEVEL
+            - SUBTREE
+          default: SUBTREE
+          example: SUBTREE
         dereference_aliases:
           type: string
+          enum:
+            - DEREF_NEVER
+            - DEREF_SEARCH
+            - DEREF_BASE
+            - DEREF_ALWAYS
+            - DEREF_ALWAYS
+          default: DEREF_ALWAYS
+          example:
         attributes:
+          oneOf:
+            - type: string
+            - type: array
+                items: string
+          default: null
+          example: ALL_ATTRIBUTES
+        size_limit:
+          type: integer
+          default: 0
+          example: 20
+        time_limit:
+          type: integer
+          default: 0
+          example: 100
+        types_only:
+          type: boolean
+          default: false
+          example: true
+        get_operational_attributes:
+          type: boolean
+          default: false
+          example: true
+        controls:
           type: array
           items:
             type: string
-        size_limit:
-          type: integer
-        time_limit:
-          type: integer
-        types_only:
-          type: boolean
-        get_operational_attributes:
-          type: boolean
-        controls:
-          type: array
-          items: string
+          example: effectiverights "(objectclass=*)"
         paged_size:
           type: integer
+          default: null
+          example: 50
         paged_criticality:
           type: boolean
+          default: false
+          example: true
         paged_cookie:
           type: object
+          default: null
+          example: null
       responses:
         '200':
           description: LDAP returned a response.

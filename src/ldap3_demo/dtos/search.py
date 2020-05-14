@@ -15,8 +15,8 @@ class Search:
 
     def __init__(self, search_base,
                  search_filter,
-                 search_scope=SUBTREE,
-                 dereference_aliases=DEREF_ALWAYS,
+                 search_scope='SUBTREE',
+                 dereference_aliases='DEREF_ALWAYS',
                  attributes=None,
                  size_limit=0,
                  time_limit=0,

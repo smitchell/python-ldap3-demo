@@ -5,7 +5,7 @@ schema = AddEntryRequestSchema()
 
 data = {
     'dn': 'cn=mwatkins,ou=employees,ou=test,o=lab',
-    'object_class': 'person,organizationalPerson,inetOrgPerson',
+    'object_class': ['person','organizationalPerson','inetOrgPerson'],
     'attributes': {
             'cn': 'Margaret Watkins, Margie Watkins',
             'dn': 'cn=mwatkins,ou=employees,ou=test,o=lab',
