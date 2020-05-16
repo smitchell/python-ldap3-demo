@@ -17,16 +17,43 @@ This project uses the following libraries.
 * Marshmallow
 * Pytest
 * Swagger
+* Python Confuse
 
 ## RUNNING LOCALLY
 
+### Configuration
+The application configuration has been externalized. It is assumed that the environment specific configuration file is provided by a CI/CD 
+pipeline when the image is deployed. Configurations are handled by [Python Confuse Library](https://confuse.readthedocs.io/en/latest/#). 
+Python Confuse looks in these operation system locations under the application name:
+
+* macOS: ~/.config/app or ~/Library/Application Support/app
+* Other Unix: ~/.config/app and /etc/app
+* Windows: %APPDATA%\app where the APPDATA environment variable falls back to %HOME%\AppData\Roaming if undefined
+
+See the full documentation on [Python Confuse search Paths](https://confuse.readthedocs.io/en/latest/#search-paths).
+
+Copy src/ldap3_demo/resource/config_template.yaml to the appropriate search path for your us in a directory named "ldap3_demo" named "config.yaml."
+For macOS you could use "~/.config/ldap3_demo/config.yaml." For Windows you could use %APPDATA%\ldap3_demo\config.yaml."
+
+```shell script
+# macOS
+mkdir ~/.config/ldap3_demo
+cp ./src/ldap3_demo/resources/config_template.yaml ~/.config/ldap3_demo/config.yaml
+
+# Linux
+mkdir /etc/ldap3_demo
+cp ./src/ldap3_demo/resources/config_template.yaml /etc/ldap3_demo/config.yaml
+```
+
+### Running tests or Swagger
+
 1) python3 -m venv --copies venv
-2) source venv/bin/activate
-3) pip install -r app/requirements.txt
-4) pip install .
-5) make test
-6) make run
-7: http://localhost:5000/api/doc
+1) source venv/bin/activate
+1) pip install -r app/requirements.txt
+1) pip install .
+1) make test
+1) make run
+8) http://localhost:5000/api/doc
 
 # RESOURCES
 These are the references I used in structuring this project. Full disclosure, I wrote Java

@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 
+import confuse
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
-from . import config
 from .routes import ldap_api
 
 app = Flask(__name__)
+config = confuse.Configuration('ldap3_demo', __name__)
+
 ### swagger specific ###
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
-    config.swagger_url,
-    config.api_url,
+    config['swagger']['ui_url'].get(),
+    config['swagger']['api_url'].get(),
     config={
         'app_name': "Python-ldap-demo"
     }
 )
-app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config.swagger_url)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config['swagger']['ui_url'].get())
 ### end swagger specific ###
 
 app.register_blueprint(ldap_api.get_blueprint())
