@@ -38,7 +38,11 @@ For macOS you could use "~/.config/ldap3_demo/config.yaml." For Windows you coul
 ```shell script
 # macOS
 mkdir ~/.config/ldap3_demo
-cp ./src/ldap3_demo/resources/config_template.yaml ~/.config/ldap3_demo/config.yaml
+###  OPTION A, if you need to edit the file for test or local with real passwords, OR... ###
+cp $(pwd)/src/ldap3_demo/resources/config_template.yaml ~/.config/ldap3_demo/config.yaml
+
+###  OPTION B, you can use a symbolic link if you only doing unit tests with the mock server and don't require a password  ###
+ln -s $(pwd)/src/ldap3_demo/resources/config_template.yaml ~/.config/ldap3_demo/config.yaml
 
 # Linux
 mkdir /etc/ldap3_demo
