@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Blueprint
 
 LDAP_API = Blueprint('ldap_api', __name__)

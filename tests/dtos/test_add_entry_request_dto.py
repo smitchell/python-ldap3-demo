@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 
 

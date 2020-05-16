@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
+
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
-
 from . import config
 from .routes import ldap_api
 

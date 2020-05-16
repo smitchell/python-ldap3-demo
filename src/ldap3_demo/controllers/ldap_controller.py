@@ -1,13 +1,15 @@
-from typing import Any
+#!/usr/bin/env python3
 
+from typing import Any
 from flask import Response
 from ldap3 import Connection
 from ldap3.core.exceptions import LDAPInvalidDnError
 from ldap3.utils.conv import escape_filter_chars
-
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
+from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
+from ldap3_demo.schemas.modify_entry_request_schema import ModifyEntryRequestSchema
 
 
 class LdapController:
@@ -28,6 +30,7 @@ class LdapController:
                 attributes = source['attributes']
                 for key in attributes:
                     attributes[key] = escape_filter_chars(attributes[key])
+
 
     @staticmethod
     def scrub_dict(source, remove_empty: bool = False):
@@ -74,6 +77,26 @@ class LdapController:
 
         return True
 
+    # This method modifies an existing entry ing LDAP. The dn must match an existing entity.
+    def modify(self, connection: Connection, modify_entry_request: ModifyEntryRequest) -> bool:
+        schema = ModifyEntryRequestSchema()
+        changes = modify_entry_request['changes']
+
+        json = schema.dump(modify_entry_request)
+        if 'controls' in json:
+            connection.modify(modify_entry_request.dn, modify_entry_request['changes'], json['controls'])
+        else:
+            connection.modify(modify_entry_request.dn, modify_entry_request['changes'])
+
+        result_description = connection.result["description"]
+        if result_description != 'success':
+            return Response(
+                f'An error occurred: {connection.last_error}',
+                status=500,
+            )
+
+        return True
+
     def search(self, connection: Connection, s: Search) -> list:
         connection.search(search_base=s.search_base,
                           search_filter=s.search_filter,
@@ -102,5 +125,3 @@ class LdapController:
         except LDAPInvalidDnError:
             # Ignore error if the dn does not exist.
             return True
-
-

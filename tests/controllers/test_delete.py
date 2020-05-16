@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from ldap3 import Server, Connection, MOCK_SYNC
 
 from ldap3_demo.controllers.ldap_controller import LdapController
@@ -11,6 +13,7 @@ def test_delete_bad_dn():
 
     controller = LdapController()
     assert controller.delete(connection, "doogie")
+
 
 def test_delete_good_dn():
     connection = Connection(server, user='cn=my_user,ou=test,o=lab', password='my_password', client_strategy=MOCK_SYNC)

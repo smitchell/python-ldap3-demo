@@ -1,9 +1,9 @@
-from typing import Union
+#!/usr/bin/env python3
 
+from typing import Union
 from ldap3_demo.controllers.ldap_controller import LdapController
-from ldap3_demo.dtos.search import Search
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
-from ldap3 import Server, Connection, MOCK_SYNC, ALL_ATTRIBUTES, BASE, Entry
+from ldap3 import Server, Connection, MOCK_SYNC, Entry
 
 from ldap3_demo.schemas.search_schema import SearchSchema
 

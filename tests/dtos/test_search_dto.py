@@ -1,5 +1,6 @@
-from ldap3 import BASE, DEREF_ALWAYS
+#!/usr/bin/env python3
 
+from ldap3 import BASE, DEREF_ALWAYS
 from ldap3_demo.dtos.search import Search
 
 
@@ -12,7 +13,8 @@ def test_create_search_dto():
     assert search.search_filter == '(objectClass=organizationalPerson)', \
         f'Expected (objectClass=organizationalPerson) but found {search.search_filter}'
     assert search.search_scope == BASE, f'Expected BASE but found {search.search_scope}'
-    assert search.dereference_aliases == DEREF_ALWAYS, f'Expected DEREF_ALWAYS but found {search.dereference_aliases}'
+    assert search.dereference_aliases == DEREF_ALWAYS, \
+        f'Expected DEREF_ALWAYS but found {search.dereference_aliases}'
     assert search.attributes is None, f'Expected None but found {search.size_limit}'
     assert search.size_limit == 0, f'Expected 0 but found {search.size_limit}'
     assert search.time_limit == 0, f'Expected 0 but found {search.time_limit}'

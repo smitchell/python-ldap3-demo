@@ -147,7 +147,7 @@ components:
           oneOf:
             - type: string
             - type: array
-                items: string
+              items: string
           example:
             inetOrgPerson
         attributes:
@@ -155,7 +155,7 @@ components:
           oneOf:
             - type: string
             - type: array
-                items: string
+              items: string
           example:
             cn: mwatkins
             dn: cn=mwatkins,ou=employees,ou=finance,dc=acme,dc=com
@@ -165,7 +165,7 @@ components:
           oneOf:
             - type: string
             - type: array
-                items: string
+              items: string
           example:
             LDAP_CONTROL_PWEXPIRED: true
 
@@ -283,7 +283,7 @@ components:
           oneOf:
             - type: string
             - type: array
-                items: string
+              items: string
           default: null
           example: ALL_ATTRIBUTES
         size_limit:
@@ -332,9 +332,3 @@ components:
           description: The request JSON was not valid.
         '500':
           descripiton: LDAP returned false.
-
-
-
-
-
-

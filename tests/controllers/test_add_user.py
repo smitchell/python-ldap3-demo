@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 from ldap3 import Server, Connection, MOCK_SYNC, ALL_ATTRIBUTES, BASE
@@ -26,6 +28,7 @@ attributes = {
     'title': 'consultant, senior consultant',
     'labeledURI': 'http://www.comapny.com/users/mwatkins My Home Page'
 }
+
 
 def test_add_user_with_controller():
 

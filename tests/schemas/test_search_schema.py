@@ -1,5 +1,6 @@
-from ldap3 import DEREF_ALWAYS
+#!/usr/bin/env python3
 
+from ldap3 import DEREF_ALWAYS
 from ldap3_demo.schemas.search_schema import SearchSchema
 
 schema = SearchSchema()
