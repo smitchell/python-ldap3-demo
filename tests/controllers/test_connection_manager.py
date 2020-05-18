@@ -44,13 +44,13 @@ data: OrderedDict = OrderedDict(
          ('connect_timeout', 20)
         ])),
      ('servers', OrderedDict(
-         [('local', OrderedDict(
+         [('test', OrderedDict(
              [('server_config', OrderedDict(
                  [('ldap_host', '192.168.1.5')])),
               ('connection_config', OrderedDict(
                 [('user', 'admin'),
                  ('password', 'abadpassword'),
-                 ('pool_name', 'local'),
+                 ('pool_name', 'test'),
                  ('pool_size', 1)
                 ]))
              ])),
@@ -102,8 +102,8 @@ def test_init_connection_manager_connection_defaults():
 
 
 def test_init_connection_manager_local_server():
-    local_server: Server = connection_manager.servers['local']
-    assert local_server is not None, 'Expected to find "local" server, but found none'
+    local_server: Server = connection_manager.servers['test']
+    assert local_server is not None, 'Expected to find "test" server, but found none'
     assert local_server.connect_timeout == 20
 
 
@@ -113,19 +113,11 @@ def test_init_connection_manager_mocked_server():
 
 
 def test_server_connection_config():
-    config = connection_manager.connection_configs['local']
+    config = connection_manager.connection_configs['test']
     assert config is not None, 'Expected mocked config, but found none'
 
     expected = config['auto_bind']
     actual = 'AUTO_BIND_NONE'
-    assert actual == expected, f'Expected {expected} but found {actual}'
-
-    actual = config['user']
-    expected = 'admin'
-    assert actual == expected, f'Expected {expected} but found {actual}'
-
-    actual = config['password']
-    expected = 'abadpassword'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
     actual = config['client_strategy']

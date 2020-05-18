@@ -17,6 +17,13 @@ paths:
       post:
         summary: Adds a new entry
         description: Creates a new entry with the specified dn, object classes and attributes
+        parameters:
+        - in: query
+          name: server_name
+          schema:
+            type: string
+          required: false
+          description: The name of the server, e.g. "mocked", "test, "prod"
         requestBody:
           required: true
           content:
@@ -36,6 +43,12 @@ paths:
       summary: Lookup an entry by DN
       description: Given a distinguished name, returns an entry
       parameters:
+        - in: query
+          name: server_name
+          schema:
+            type: string
+          required: false
+          description: The name of the server, e.g. "mocked", "test, "prod"
         - in: path
           name: dn
           schema:
@@ -61,6 +74,12 @@ paths:
       summary: Modifies an exiting entry
       description: See https://ldap3.readthedocs.io/en/latest/modify.html
       parameters:
+        - in: query
+          name: server_name
+          schema:
+            type: string
+          required: false
+          description: The name of the server, e.g. "mocked", "test, "prod"
         - in: path
           name: dn
           schema:
@@ -88,6 +107,12 @@ paths:
       summary: Delete an entry by DN
       description: Given a distinguished name, deletes an entry
       parameters:
+        - in: query
+          name: server_name
+          schema:
+            type: string
+          required: false
+          description: The name of the server, e.g. "mocked", "test, "prod"
         - in: path
           name: dn
           schema:
@@ -107,6 +132,13 @@ paths:
     post:
       summary: Searches entries by posted search criteria.
       description: See https://ldap3.readthedocs.io/en/latest/searches.html
+      parameters:
+        - in: query
+          name: server_name
+          schema:
+            type: string
+          required: false
+          description: The name of the server, e.g. "mocked", "test, "prod"
       requestBody:
         required: true
         content:

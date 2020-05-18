@@ -11,8 +11,8 @@ ldap:
     authentication: AUTH_SIMPLE
     client_strategy: REUSABLE
     auto_referrals: True
-    sasl_mechanism: None
-    sasl_credential: None
+    sasl_mechanism: null
+    sasl_credential: null
     collect_usage: True
     read_only: False
     lazy: True
@@ -37,28 +37,27 @@ ldap:
   server_default_config:
     ldap_port: 389
     use_ssl: False
-    allowed_referral_hosts: None
+    allowed_referral_hosts: null
     get_info: SCHEMA
     mode: IP_SYSTEM_DEFAULT
-    tls: None
-    formatter: None
+    tls: null
+    formatter: null
     connect_timeout: 20
 
   servers:
-    local:
+    test:
       server_config:
-        # See https://ldap3.readthedocs.io/en/latest/server.html#
         ldap_host: 192.168.1.5
       connection_config:
-        user: admin
+        user: 'cn=admin,ou=test,o=lab'
         password: <<PASSWORD_PLACEHOLDER>>
-        pool_name: local
+        pool_name: test
         pool_size: 1
 
     mocked:
       server_config: null
       connection_config:
-        user: 'cn=my_user,ou=test,o=lab'
+        user: 'cn=admin,ou=test,o=lab'
         password: my_password
         client_strategy: MOCK_SYNC
 

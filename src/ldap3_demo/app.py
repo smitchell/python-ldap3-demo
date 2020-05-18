@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
-
 from confuse import Configuration
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
-
-from .controllers.connection_manager import ConnectionManager
 from .routes import ldap_api
 
 app = Flask(__name__)
@@ -22,8 +19,6 @@ app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config['swagger']['ui_url
 ### end swagger specific ###
 
 app.register_blueprint(ldap_api.get_blueprint())
-
-connection_manager = ConnectionManager(config['ldap'].get(dict))
 
 
 @app.errorhandler(400)

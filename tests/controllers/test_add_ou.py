@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-from typing import Union
-from ldap3_demo.app import connection_manager
+from confuse import Configuration
+from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 from ldap3_demo.schemas.search_schema import SearchSchema
 
 schema = AddEntryRequestSchema()
+config = Configuration('ldap3_demo', __name__)
+connection_manager = ConnectionManager(config['ldap'].get(dict))
+
 
 def test_add_user_with_controller():
 

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 from collections import OrderedDict
-from typing import Any
-
 from ldap3 import Server, Connection
 from ldap3.utils.dn import escape_rdn
 
@@ -14,7 +12,6 @@ class ConnectionManager:
     connection_configs: dict = {}
 
     def __init__(self, config: OrderedDict):
-        print(f'KEYS = {config.keys()}')
         self.connection_default_config = config['connection_default_config']
         self.server_default_config = config['server_default_config']
 
@@ -74,7 +71,7 @@ class ConnectionManager:
             # Only pull in the default value if it is missing.
             for key in self.server_default_config.keys():
                 if key not in server_config.keys():
-                    server_config[key] = self._format(self.server_default_config[key])
+                    server_config[key] = self.server_default_config[key]
             self.servers[server_name] = self._server_factory(server_config)
 
     def _add_connection_config(self, server_name: str, config: OrderedDict):
@@ -85,19 +82,12 @@ class ConnectionManager:
         if server_name != 'mocked':
             for key in self.connection_default_config.keys():
                 if key not in connection_config.keys():
-                    connection_config[key] = self._format(self.connection_default_config[key])
+                    connection_config[key] = self.connection_default_config[key]
 
         self.connection_configs[server_name] = connection_config
 
     @staticmethod
-    def _format(value: Any) -> Any:
-        if value == 'None':
-            return None
-        return value
-
-    @staticmethod
     def _server_factory(config: dict) -> Server:
-        print(f'_server_factory config --> {config.keys()}')
         return Server(
             config['ldap_host'],
             port=config['ldap_port'],
