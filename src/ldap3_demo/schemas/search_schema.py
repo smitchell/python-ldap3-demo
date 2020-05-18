@@ -8,7 +8,7 @@ from ldap3_demo.dtos.search import Search
 class SearchSchema(Schema):
     search_base = fields.Str(required=True)
     search_filter = fields.Str(required=True)
-    search_scope = fields.Str(default='SUBTREE', validate=OneOf(['BASE', 'LEVEL=LEVEL', 'SUBTREE']))
+    search_scope = fields.Str(default='SUBTREE', validate=OneOf(['BASE', 'LEVEL', 'SUBTREE']))
     dereference_aliases = fields.Str(default='DEREF_ALWAYS',
                                      validate=OneOf(['DEREF_NEVER', 'DEREF_SEARCH', 'DEREF_BASE', 'DEREF_ALWAYS']))
     attributes = fields.Raw(allow_none=True)

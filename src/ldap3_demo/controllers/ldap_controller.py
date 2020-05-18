@@ -10,6 +10,7 @@ from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 from ldap3_demo.schemas.modify_entry_request_schema import ModifyEntryRequestSchema
+from ldap3_demo.app import connection_manager
 
 
 class LdapController:
@@ -31,7 +32,6 @@ class LdapController:
                 for key in attributes:
                     attributes[key] = escape_filter_chars(attributes[key])
 
-
     @staticmethod
     def scrub_dict(source, remove_empty: bool = False):
         target = {}
@@ -45,7 +45,9 @@ class LdapController:
 
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
-    def add(self, connection: Connection, add_entry_request: AddEntryRequest) -> bool:
+    def add(self, server_name: str, add_entry_request: AddEntryRequest) -> bool:
+        connection: Connection = connection_manager.get_connection(server_name, None)
+        connection.bind()
         schema = AddEntryRequestSchema()
 
         json = schema.dump(add_entry_request)
@@ -78,7 +80,9 @@ class LdapController:
         return True
 
     # This method modifies an existing entry ing LDAP. The dn must match an existing entity.
-    def modify(self, connection: Connection, modify_entry_request: ModifyEntryRequest) -> bool:
+    def modify(self, server_name: str, modify_entry_request: ModifyEntryRequest) -> bool:
+        connection: Connection = connection_manager.get_connection(server_name, None)
+        connection.bind()
         schema = ModifyEntryRequestSchema()
         changes = modify_entry_request['changes']
 
@@ -97,7 +101,9 @@ class LdapController:
 
         return True
 
-    def search(self, connection: Connection, s: Search) -> list:
+    def search(self, server_name: str, s: Search) -> list:
+        connection: Connection = connection_manager.get_connection(server_name, None)
+        connection.bind()
         connection.search(search_base=s.search_base,
                           search_filter=s.search_filter,
                           search_scope=s.search_scope,
@@ -119,7 +125,9 @@ class LdapController:
 
         return connection.entries
 
-    def delete(self, connection: Connection, dn: Any, controls: Any = None) -> bool:
+    def delete(self, server_name: str, dn: Any, controls: Any = None) -> bool:
+        connection: Connection = connection_manager.get_connection(server_name, None)
+        connection.bind()
         try:
             return connection.delete(dn, controls=controls)
         except LDAPInvalidDnError:

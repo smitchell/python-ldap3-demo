@@ -1,10 +1,10 @@
 --- 
-swagger: 
+swagger:
   api_url: /static/swagger.yaml
   ui_url: /api/docs
 
 ldap:
-  connection_default_default:
+  connection_default_config:
     # https://ldap3/readthedocs/io/en/latest/connection/html
     auto_bind: AUTO_BIND_NONE
     version: 3
@@ -18,6 +18,9 @@ ldap:
     lazy: True
     check_names: True
     raise_exceptions: False
+    pool_active: True
+    poop_exhust: True
+    pool_strategy: ROUND_ROBIN
     pool_name: default
     pool_size: 5
     pool_lifetime: 120
@@ -29,52 +32,33 @@ ldap:
     use_referral_cache: True
     auto_escape: True
     auto_encode: True
+    connect_timeout: 20
 
   server_default_config:
+    ldap_port: 389
+    use_ssl: False
     allowed_referral_hosts: None
     get_info: SCHEMA
     mode: IP_SYSTEM_DEFAULT
     tls: None
     formatter: None
+    connect_timeout: 20
 
-  local:
-    server_config:
-      # See https://ldap3.readthedocs.io/en/latest/server.html#
-      ldap_host: 192.168.1.5
-      user: admin
-      password: <<PASSWORD_PLACEHOLDER>>
-      ldap_port: 389
-      use_ssl: False
-    connection_config:
-      pool_name: local
-      fast_decoder: False
+  servers:
+    local:
+      server_config:
+        # See https://ldap3.readthedocs.io/en/latest/server.html#
+        ldap_host: 192.168.1.5
+      connection_config:
+        user: admin
+        password: <<PASSWORD_PLACEHOLDER>>
+        pool_name: local
+        pool_size: 1
 
-  mocked:
-    server_config:
-      # See https://ldap3.readthedocs.io/en/latest/server.html#
-      ldap_host: 192.168.1.5
-      user: admin
-      password: <<PASSWORD_PLACEHOLDER>>
-      ldap_port: 389
-      use_ssl: False
-      check_names: False
-    connection_config:
-      client_strategy: MOCK_SYNC
-      authentication: ANONYMOUS
-      pool_name: mocked
-      pool_size: 1
-      fast_decoder: False
+    mocked:
+      server_config: null
+      connection_config:
+        user: 'cn=my_user,ou=test,o=lab'
+        password: my_password
+        client_strategy: MOCK_SYNC
 
-    server_pool_config:
-      ha_active: True
-      ha_exhust: 1200
-      ha_strategy: ROUND_ROBIN
-      ldap_timeout:
-      ldap_debug:
-      pool_name: Config.get(LDAP)['pool_name']
-      pool_size: int(Config.get(LDAP)['pool_size'])
-      pool_lifetime: int(Config.get(LDAP)['pool_lifetime'])
-      pool_keepalive: int(Config.get(LDAP)['pool_keepalive'])
-      ldap_use_ssl: Config.get(LDAP)['use_ssl']
-      ldap3_log_level_str: Config.get(LDAP)['ldap3_log_level']
-      ldap3_log_level : 0

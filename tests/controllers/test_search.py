@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-
-from typing import Union
+from ldap3_demo.app import connection_manager
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
-from ldap3 import Server, Connection, MOCK_SYNC, Entry
+from ldap3 import Entry
 
 from ldap3_demo.schemas.search_schema import SearchSchema
 
-server = Server('my_fake_server')
 schema = AddEntryRequestSchema()
 
 attributes = {
@@ -33,8 +31,6 @@ attributes = {
 }
 
 def test_search_ou_by_dn():
-    connection = Connection(server, user='cn=my_user,ou=test,o=lab', password='my_password', client_strategy=MOCK_SYNC)
-    connection.bind()
 
     # Pass the new employees data to the controller
     controller = LdapController()
@@ -42,7 +38,7 @@ def test_search_ou_by_dn():
         'dn': 'cn=employees,ou=test,o=lab',
         'object_class': 'organizationalUnit'
     })
-    result = controller.add(connection, add_entry_request)
+    result = controller.add(connection_manager.mocked, add_entry_request)
     dn = add_entry_request.dn
     assert result, f'There was a problem adding {dn}'
 
@@ -52,16 +48,13 @@ def test_search_ou_by_dn():
         'search_scope': 'BASE'
     }
     search_schema = SearchSchema()
-    search: Union = search_schema.load(data)
-    results = controller.search(connection, search)
+    results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
     entry: Entry = results[0]
     assert entry.entry_dn == dn, f'Expected {dn} but found {entry.entry_dn}'
 
 
 def test_search_person_by_dn():
-    connection = Connection(server, user='cn=my_user,ou=test,o=lab', password='my_password', client_strategy=MOCK_SYNC)
-    connection.bind()
 
     # Pass the new employees data to the controller
     controller = LdapController()
@@ -69,20 +62,20 @@ def test_search_person_by_dn():
         'dn': 'cn=employees,ou=test,o=lab',
         'object_class': 'organizationalUnit'
     })
-    controller.add(connection, add_entry_request)
+    controller.add(connection_manager.mocked, add_entry_request)
 
     add_entry_request = schema.load({
         'dn': 'cn=users,cn=employees,ou=test,o=lab',
         'object_class': 'organizationalUnit'
     })
-    controller.add(connection, add_entry_request)
+    controller.add(connection_manager.mocked, add_entry_request)
 
     add_entry_request = schema.load({
         'dn': 'cn=cevans,cn=users,cn=employees,ou=test,o=lab',
         'object_class': ['top,person', 'organizationalPerson', 'inetOrgPerson'],
         'attributes': attributes
     })
-    controller.add(connection, add_entry_request)
+    controller.add(connection_manager.mocked, add_entry_request)
 
     data = {
         'search_base': add_entry_request.dn,
@@ -90,8 +83,7 @@ def test_search_person_by_dn():
         'search_scope': 'BASE'
     }
     search_schema = SearchSchema()
-    search: Union = search_schema.load(data)
-    results = controller.search(connection, search)
+    results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
     entry: Entry = results[0]
     assert entry.entry_dn == add_entry_request.dn, f'Expected {add_entry_request.dn} but found {entry.entry_dn}'
