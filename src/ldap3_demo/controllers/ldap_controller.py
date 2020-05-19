@@ -2,18 +2,26 @@
 import logging
 from confuse import Configuration
 from typing import Any
-from typing import List
-from typing import Optional
+from ldap3.abstract.entry import Entry
 from flask import Response
-from ldap3 import Connection
+from ldap3 import Connection, ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES, DEREF_NEVER, DEREF_SEARCH, DEREF_BASE, \
+    DEREF_ALWAYS, BASE, LEVEL, SUBTREE
 from ldap3.core.exceptions import LDAPInvalidDnError
 from ldap3.utils.conv import escape_filter_chars
 from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
-from ldap3.abstract.entry import Entry
-import json
+
+dereference_aliases_types = dict(
+    DEREF_NEVER=DEREF_NEVER,
+    DEREF_SEARCH=DEREF_SEARCH,
+    DEREF_BASE=DEREF_BASE,
+    DEREF_ALWAYS=DEREF_ALWAYS
+)
+
+search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
+
 
 
 class LdapController:
@@ -104,14 +112,14 @@ class LdapController:
 
         return True
 
-    def search(self, server_name: str, s: Search) -> List[Optional[Any]]:
+    def search(self, server_name: str, s: Search) -> list:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
         connection.search(search_base=s.search_base,
                           search_filter=s.search_filter,
-                          search_scope=s.search_scope,
-                          dereference_aliases=s.dereference_aliases,
-                          attributes=s.attributes,
+                          search_scope=search_scope_types[s.search_scope],
+                          dereference_aliases=dereference_aliases_types[s.dereference_aliases],
+                          attributes=LdapController._convert_attributes_keyword(s.attributes),
                           size_limit=s.size_limit,
                           time_limit=s.time_limit,
                           types_only=s.types_only,
@@ -150,6 +158,14 @@ class LdapController:
         results = []
         if entries is not None:
             for entry in entries:
-                my_entry = entry.entry_to_json()
-                results.append(json.loads(my_entry))
+                results.append({'dn': entry.entry_dn, 'attributes': entry.entry_attributes_as_dict})
         return results
+
+    @staticmethod
+    def _convert_attributes_keyword(value) -> Any:
+        if value == 'ALL_ATTRIBUTES':
+            return ALL_ATTRIBUTES
+        if value == 'ALL_OPERATION_ATTRIBUTES':
+            return ALL_OPERATIONAL_ATTRIBUTES
+        return value
+

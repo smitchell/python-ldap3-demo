@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from marshmallow import Schema, fields, post_load
 from marshmallow.validate import OneOf
 from ldap3_demo.dtos.search import Search

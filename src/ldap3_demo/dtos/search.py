@@ -1,41 +1,26 @@
-from ldap3 import DEREF_ALWAYS, BASE, LEVEL, SUBTREE, DEREF_NEVER, DEREF_SEARCH, DEREF_BASE, ALL_ATTRIBUTES, \
-    ALL_OPERATIONAL_ATTRIBUTES
 
-search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
-
-dereference_aliases_types = dict(
-    DEREF_NEVER=DEREF_NEVER,
-    DEREF_SEARCH=DEREF_SEARCH,
-    DEREF_BASE=DEREF_BASE,
-    DEREF_ALWAYS=DEREF_ALWAYS
-)
+from typing import Any
 
 
 class Search:
 
     def __init__(self, search_base,
-                 search_filter,
-                 search_scope='SUBTREE',
-                 dereference_aliases='DEREF_ALWAYS',
-                 attributes=None,
-                 size_limit=0,
-                 time_limit=0,
-                 types_only=False,
-                 get_operational_attributes=False,
-                 controls=None,
-                 paged_size=None,
-                 paged_criticality=False,
-                 paged_cookie=None):
+                 search_filter: str,
+                 search_scope: str = 'SUBTREE',
+                 dereference_aliases: str = 'DEREF_ALWAYS',
+                 attributes: Any = None,
+                 size_limit: int = 0,
+                 time_limit: int = 0,
+                 types_only: bool = False,
+                 get_operational_attributes: bool = False,
+                 controls: Any = None,
+                 paged_size: int = None,
+                 paged_criticality: bool = False,
+                 paged_cookie: Any = None):
         self.search_base = search_base
         self.search_filter = search_filter
-        self.search_scope = search_scope_types[search_scope]
-        self.dereference_aliases = dereference_aliases_types[dereference_aliases]
-        if attributes == 'ALL_ATTRIBUTES':
-            self.attributes = ALL_ATTRIBUTES
-        elif attributes == 'ALL_OPERATIONAL_ATTRIBUTES':
-            self.attributes = ALL_OPERATIONAL_ATTRIBUTES
-        else:
-            self.attributes = attributes
+        self.search_scope = search_scope
+        self.dereference_aliases = dereference_aliases
         self.attributes = attributes
         self.size_limit = size_limit
         self.time_limit = time_limit

@@ -48,8 +48,8 @@ def get_entry(dn: str):
     }
 
     search_results = ldap_controller.search(_get_name(request.args), search_schema.load(data))
-    logging.warning(f'search_results: {search_results}')
-    return jsonify(search_results), 200
+
+    return json.dumps(search_results), 200
 
 
 @ldap_api_blueprint.route('/api/entry/<string:dn>',  methods=['PUT'])

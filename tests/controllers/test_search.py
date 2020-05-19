@@ -3,8 +3,6 @@ from confuse import Configuration
 from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
-from ldap3 import Entry
-
 from ldap3_demo.schemas.search_schema import SearchSchema
 
 schema = AddEntryRequestSchema()
@@ -54,8 +52,8 @@ def test_search_ou_by_dn():
     search_schema = SearchSchema()
     results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
-    entry = results[0]
-    assert entry['dn'] == dn, f'Expected {dn} but found {entry["dn"]}'
+    for entry in results:
+        assert entry['dn'] == dn, f'Expected {dn} but found {entry["dn"]}'
 
 
 def test_search_person_by_dn():
@@ -76,7 +74,7 @@ def test_search_person_by_dn():
 
     add_entry_request = schema.load({
         'dn': 'cn=cevans,cn=users,cn=employees,ou=test,o=lab',
-        'object_class': ['top,person', 'organizationalPerson', 'inetOrgPerson'],
+        'object_class': ['person', 'organizationalPerson', 'inetOrgPerson'],
         'attributes': attributes
     })
     controller.add(connection_manager.mocked, add_entry_request)
@@ -89,6 +87,6 @@ def test_search_person_by_dn():
     search_schema = SearchSchema()
     results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
-    entry = results[0]
-    assert entry['dn'] == add_entry_request.dn, f'Expected {add_entry_request.dn} but found {entry["dn"]}'
+    for entry in results:
+        assert entry['dn'] == add_entry_request.dn, f'Expected {add_entry_request.dn} but found {entry["dn"]}'
 
