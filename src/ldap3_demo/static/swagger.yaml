@@ -5,10 +5,6 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://prod.something.com:5000
-    description: Production
-  - url: http://staging.something.com:5000
-    description: Staging
   - url: http://127.0.0.1:5000
     description: Local testing
 
@@ -23,7 +19,7 @@ paths:
           schema:
             type: string
           required: false
-          description: The name of the server, e.g. "mocked", "test, "prod"
+          description: The name of the server, e.g. mocked, test, prod
         requestBody:
           required: true
           content:
@@ -32,7 +28,7 @@ paths:
                 $ref: '#/components/schemas/AddEntryRequest'
         responses:
           '201':
-            description: LDAP returned true.
+            description: Entry created
           '400':
             description: The request JSON was not valid, or the dn is in use.
           '500':
@@ -48,7 +44,7 @@ paths:
           schema:
             type: string
           required: false
-          description: The name of the server, e.g. "mocked", "test, "prod"
+          description: The name of the server, e.g. mocked, test, prod
         - in: path
           name: dn
           schema:
@@ -79,7 +75,7 @@ paths:
           schema:
             type: string
           required: false
-          description: The name of the server, e.g. "mocked", "test, "prod"
+          description: The name of the server, e.g. mocked, test, prod
         - in: path
           name: dn
           schema:
@@ -112,7 +108,7 @@ paths:
           schema:
             type: string
           required: false
-          description: The name of the server, e.g. "mocked", "test, "prod"
+          description: The name of the server, e.g. mocked, test, prod
         - in: path
           name: dn
           schema:
@@ -138,7 +134,7 @@ paths:
           schema:
             type: string
           required: false
-          description: The name of the server, e.g. "mocked", "test, "prod"
+          description: The name of the server, e.g. mocked, test, prod
       requestBody:
         required: true
         content:

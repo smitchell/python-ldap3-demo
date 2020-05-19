@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 class ModifyEntryRequest:
 
     def __init__(self, dn, changes, controls=None):

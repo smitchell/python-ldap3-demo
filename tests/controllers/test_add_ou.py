@@ -16,7 +16,9 @@ def test_add_user_with_controller():
     controller = LdapController()
     add_entry_request = schema.load({
         'dn': 'cn=employees,ou=test,o=lab',
-        'object_class': 'organizationalUnit'
+        'object_class': 'organizationalUnit',
+        'attributes': None,
+        'controls': None
     })
     result = controller.add(connection_manager.mocked, add_entry_request)
     assert result, 'There was a problem adding {add_entry_request.dn}'

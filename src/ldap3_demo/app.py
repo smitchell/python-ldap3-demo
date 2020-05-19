@@ -3,8 +3,10 @@ from confuse import Configuration
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
 from .routes import ldap_api
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 config = Configuration('ldap3_demo', __name__)
 
 ### swagger specific ###

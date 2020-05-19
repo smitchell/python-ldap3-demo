@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 from confuse import Configuration
 from typing import Any
 from typing import List
@@ -7,13 +8,10 @@ from flask import Response
 from ldap3 import Connection
 from ldap3.core.exceptions import LDAPInvalidDnError
 from ldap3.utils.conv import escape_filter_chars
-
 from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
-from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
-from ldap3_demo.schemas.modify_entry_request_schema import ModifyEntryRequestSchema
 
 
 class LdapController:
@@ -55,21 +53,18 @@ class LdapController:
     def add(self, server_name: str, add_entry_request: AddEntryRequest) -> bool:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
-        schema = AddEntryRequestSchema()
 
-        json = schema.dump(add_entry_request)
-
-        if 'controls' in json:
-            if 'attributes' in json and json['attributes'] is not None:
-                connection.add(add_entry_request.dn, json['object_class'],
-                               LdapController.scrub_dict(json['attributes'], True), json['controls'])
+        if add_entry_request.controls is None:
+            if add_entry_request.attributes is not None:
+                connection.add(add_entry_request.dn, add_entry_request.object_class,
+                               LdapController.scrub_dict(add_entry_request.attributes, True), add_entry_request.controls)
             else:
-                connection.add(add_entry_request.dn, json['object_class'], None, json['controls'])
-        elif 'attributes' in json and json['attributes'] is not None:
-            connection.add(add_entry_request.dn, json['object_class'],
-                           LdapController.scrub_dict(json['attributes'], True))
+                connection.add(add_entry_request.dn, add_entry_request.object_class, None, add_entry_request.controls)
+        elif add_entry_request.attributes is not None:
+            connection.add(add_entry_request.dn, add_entry_request.object_class,
+                           LdapController.scrub_dict(add_entry_request.attributes, True))
         else:
-            connection.add(add_entry_request.dn, json['object_class'])
+            connection.add(add_entry_request.dn, add_entry_request.object_class)
 
         result_description = connection.result["description"]
         if result_description == 'entryAlreadyExists':
@@ -90,12 +85,10 @@ class LdapController:
     def modify(self, server_name: str, modify_entry_request: ModifyEntryRequest) -> bool:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
-        schema = ModifyEntryRequestSchema()
-        changes = modify_entry_request['changes']
+        changes = modify_entry_request.changes
 
-        json = schema.dump(modify_entry_request)
-        if 'controls' in json:
-            connection.modify(modify_entry_request.dn, changes, json['controls'])
+        if modify_entry_request.controls is not None:
+            connection.modify(modify_entry_request.dn, changes, modify_entry_request.controls)
         else:
             connection.modify(modify_entry_request.dn, changes)
 
