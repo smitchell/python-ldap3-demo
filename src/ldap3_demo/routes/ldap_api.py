@@ -2,18 +2,21 @@
 import logging
 from typing import Any
 
-from flask import make_response, Response, json, jsonify
+from flask import json, jsonify
 from flask import Blueprint
 from flask import request
 from urllib.parse import unquote
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
+from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
+from ldap3_demo.schemas.modify_entry_request_schema import ModifyEntryRequestSchema
 from ldap3_demo.schemas.search_schema import SearchSchema
 
 ldap_api_blueprint = Blueprint('ldap_api', __name__)
 ldap_controller = LdapController()
 search_schema = SearchSchema()
+modify_entry_request_schema = ModifyEntryRequestSchema()
 
 
 def get_blueprint():
@@ -60,7 +63,13 @@ def modify_entry(dn: str):
     if content_dn != dn:
         return f'Path dn {dn} does not match content dn {content_dn}', 400
 
-    return jsonify(ldap_controller.modify(_get_name(request.args), search_schema.load(request.data))), 200
+    data = request.get_data(as_text=True)
+    json_data = json.loads(data)
+    modify_entry_request: ModifyEntryRequest = modify_entry_request_schema.load(json_data)
+    result = ldap_controller.modify(_get_name(request.args), modify_entry_request)
+    if result:
+        return 'OK', 200
+    return 'ERROR', 500
 
 
 @ldap_api_blueprint.route('/api/entry/<string:dn>',  methods=['DELETE'])

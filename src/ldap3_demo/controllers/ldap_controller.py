@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-import logging
 from confuse import Configuration
 from typing import Any
-from ldap3.abstract.entry import Entry
 from flask import Response
 from ldap3 import Connection, ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES, DEREF_NEVER, DEREF_SEARCH, DEREF_BASE, \
-    DEREF_ALWAYS, BASE, LEVEL, SUBTREE
+    DEREF_ALWAYS, BASE, LEVEL, SUBTREE, MODIFY_ADD, MODIFY_DELETE, MODIFY_REPLACE, MODIFY_INCREMENT
 from ldap3.core.exceptions import LDAPInvalidDnError
 from ldap3.utils.conv import escape_filter_chars
 from ldap3_demo.controllers.connection_manager import ConnectionManager
@@ -20,8 +18,14 @@ dereference_aliases_types = dict(
     DEREF_ALWAYS=DEREF_ALWAYS
 )
 
-search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
+operation_types = dict(
+    MODIFY_ADD=MODIFY_ADD,
+    MODIFY_DELETE=MODIFY_DELETE,
+    MODIFY_REPLACE=MODIFY_REPLACE,
+    MODIFY_INCREMENT=MODIFY_INCREMENT
+)
 
+search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
 
 
 class LdapController:
@@ -50,7 +54,6 @@ class LdapController:
     @staticmethod
     def scrub_dict(source, remove_empty: bool = False):
         target = {}
-        print(f'remove_empty -> {remove_empty}')
         for key in source:
             value = escape_filter_chars(source[key])
             if remove_empty and (value is None or value == 'None' or len(value) == 0):
@@ -97,6 +100,21 @@ class LdapController:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
         changes = modify_entry_request.changes
+        for attribute_key in changes:
+            attribute = changes[attribute_key]
+            temp_dict = {}
+            result = []
+            for operation in attribute:
+                for operation_key in operation.keys():
+                    new_key = operation_types[operation_key]
+                    if new_key in temp_dict:
+                        temp_dict[new_key] += operation[operation_key]
+                    else:
+                        temp_dict[new_key] = operation[operation_key]
+
+            for key in temp_dict.keys():
+                result.append(tuple([key] + temp_dict[key]))
+            changes[attribute_key] = result
 
         if modify_entry_request.controls is not None:
             connection.modify(modify_entry_request.dn, changes, modify_entry_request.controls)
@@ -105,10 +123,7 @@ class LdapController:
 
         result_description = connection.result["description"]
         if result_description != 'success':
-            return Response(
-                f'An error occurred: {connection.last_error}',
-                status=500,
-            )
+            return False
 
         return True
 
@@ -130,13 +145,10 @@ class LdapController:
                           paged_cookie=s.paged_cookie)
         print(connection)
         if connection.result is None:
-            print('connection result is None')
             return []
         if 'description' in connection.result:
             description = connection.result['description']
-            print(f'Description: {description}')
             if description == 'success':
-                logging.warning(f'Entries --> {connection.entries}')
                 return self._convert_results(connection.entries)
             elif description != 'noSuchObject':
                 return Response(f'A search error occurred: {description}', status=500)
