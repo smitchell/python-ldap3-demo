@@ -54,8 +54,8 @@ def test_search_ou_by_dn():
     search_schema = SearchSchema()
     results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
-    entry: Entry = results[0]
-    assert entry.entry_dn == dn, f'Expected {dn} but found {entry.entry_dn}'
+    entry = results[0]
+    assert entry['dn'] == dn, f'Expected {dn} but found {entry["dn"]}'
 
 
 def test_search_person_by_dn():
@@ -89,6 +89,6 @@ def test_search_person_by_dn():
     search_schema = SearchSchema()
     results = controller.search(connection_manager.mocked, search_schema.load(data))
     assert len(results) == 1, f'Expect one search result but found {len(results)}'
-    entry: Entry = results[0]
-    assert entry.entry_dn == add_entry_request.dn, f'Expected {add_entry_request.dn} but found {entry.entry_dn}'
+    entry = results[0]
+    assert entry['dn'] == add_entry_request.dn, f'Expected {add_entry_request.dn} but found {entry["dn"]}'
 

@@ -12,6 +12,8 @@ from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
+from ldap3.abstract.entry import Entry
+import json
 
 
 class LdapController:
@@ -57,7 +59,8 @@ class LdapController:
         if add_entry_request.controls is None:
             if add_entry_request.attributes is not None:
                 connection.add(add_entry_request.dn, add_entry_request.object_class,
-                               LdapController.scrub_dict(add_entry_request.attributes, True), add_entry_request.controls)
+                               LdapController.scrub_dict(add_entry_request.attributes, True),
+                               add_entry_request.controls)
             else:
                 connection.add(add_entry_request.dn, add_entry_request.object_class, None, add_entry_request.controls)
         elif add_entry_request.attributes is not None:
@@ -125,9 +128,10 @@ class LdapController:
             description = connection.result['description']
             print(f'Description: {description}')
             if description == 'success':
-                return connection.entries
+                logging.warning(f'Entries --> {connection.entries}')
+                return self._convert_results(connection.entries)
             elif description != 'noSuchObject':
-                return Response(f'A search error occurred: {description}', status=500 )
+                return Response(f'A search error occurred: {description}', status=500)
 
         return []
 
@@ -140,3 +144,12 @@ class LdapController:
         except LDAPInvalidDnError:
             # Ignore error if the dn does not exist.
             return True
+
+    @staticmethod
+    def _convert_results(entries) -> list:
+        results = []
+        if entries is not None:
+            for entry in entries:
+                my_entry = entry.entry_to_json()
+                results.append(json.loads(my_entry))
+        return results
