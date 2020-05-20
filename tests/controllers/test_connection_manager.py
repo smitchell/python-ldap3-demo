@@ -6,13 +6,13 @@ from ldap3_demo.controllers.connection_manager import ConnectionManager
 
 data: OrderedDict = OrderedDict(
     [('connection_default_config', OrderedDict(
-        [('auto_bind', 'AUTO_BIND_NONE'),
+        [('auto_bind', 'AUTO_BIND_NO_TLS'),
          ('version', 3),
-         ('authentication', 'AUTH_SIMPLE'),
+         ('authentication', 'SIMPLE'),
          ('client_strategy', 'REUSABLE'),
          ('auto_referrals', True),
          ('sasl_mechanism', None),
-         ('sasl_credential', None),
+         ('sasl_credentials', None),
          ('collect_usage', True),
          ('read_only', False),
          ('lazy', True),
@@ -41,7 +41,7 @@ data: OrderedDict = OrderedDict(
          ('mode', 'IP_SYSTEM_DEFAULT'),
          ('tls', None),
          ('formatter', None),
-         ('connect_timeout', 20)
+         ('connect_timeout', 30)
         ])),
      ('servers', OrderedDict(
          [('test', OrderedDict(
@@ -88,23 +88,23 @@ def test_init_connection_manager_connection_defaults():
     assert connection_manager.connection_default_config is not None, 'Expected server_default_config but found none'
     print(connection_manager.connection_default_config )
 
-    expected = connection_manager.connection_default_config['auto_bind']
-    actual = 'AUTO_BIND_NONE'
+    actual = connection_manager.connection_default_config['auto_bind']
+    expected = 'AUTO_BIND_NO_TLS'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
-    expected = connection_manager.connection_default_config['authentication']
-    actual = 'AUTH_SIMPLE'
+    actual = connection_manager.connection_default_config['authentication']
+    expected = 'SIMPLE'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
-    expected = connection_manager.connection_default_config['client_strategy']
-    actual = 'REUSABLE'
+    actual = connection_manager.connection_default_config['client_strategy']
+    expected = 'REUSABLE'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
 
 def test_init_connection_manager_local_server():
     local_server: Server = connection_manager.servers['test']
     assert local_server is not None, 'Expected to find "test" server, but found none'
-    assert local_server.connect_timeout == 20
+    assert local_server.connect_timeout == 30
 
 
 def test_init_connection_manager_mocked_server():
@@ -116,8 +116,8 @@ def test_server_connection_config():
     config = connection_manager.connection_configs['test']
     assert config is not None, 'Expected mocked config, but found none'
 
-    expected = config['auto_bind']
-    actual = 'AUTO_BIND_NONE'
+    actual = config['auto_bind']
+    expected = 'AUTO_BIND_NO_TLS'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
     actual = config['client_strategy']
@@ -125,7 +125,7 @@ def test_server_connection_config():
     assert actual == expected, f'Expected {expected} but found {actual}'
 
     actual = config['authentication']
-    expected = 'AUTH_SIMPLE'
+    expected = 'SIMPLE'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
 

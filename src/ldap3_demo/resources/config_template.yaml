@@ -11,8 +11,8 @@ ldap:
     authentication: AUTH_SIMPLE
     client_strategy: REUSABLE
     auto_referrals: True
-    sasl_mechanism: null
-    sasl_credential: null
+    sasl_mechanism: GSSAPI
+    sasl_credentials: null
     collect_usage: True
     read_only: False
     lazy: True

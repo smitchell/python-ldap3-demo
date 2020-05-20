@@ -158,6 +158,7 @@ class LdapController:
     def delete(self, server_name: str, dn: Any, controls: Any = None) -> bool:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
+
         try:
             connection.delete(dn, controls=controls)
             return True
