@@ -5,17 +5,17 @@ from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.search_schema import SearchSchema
 
 config = Configuration('ldap3_demo', __name__)
-connection_manager = ConnectionManager(config['ldap'].get(dict))
+connection_manager = ConnectionManager(config.get(dict))
 controller = LdapController()
 search_schema = SearchSchema()
 
 def test_delete_bad_dn():
-    assert controller.delete(connection_manager.mocked, "doogie")
+    assert controller.delete('mocked', "doogie")
 
 
 def test_delete_good_dn():
     dn = 'cn=random_cn,cn=groups,ou=test,o=lab'
-    connection = connection_manager.get_connection(connection_manager.mocked)
+    connection = connection_manager.get_connection('mocked')
     connection.bind()
     connection.add(dn, object_class='organizationalUnit')
     data = {
@@ -24,12 +24,12 @@ def test_delete_good_dn():
         'search_scope': 'BASE'
     }
 
-    results: list = controller.search(connection_manager.mocked, search_schema.load(data))
+    results: list = controller.search('mocked', search_schema.load(data))
     assert len(results) == 1, f'BEFORE: Expected 1 search result but found {len(results)}'
 
-    assert controller.delete(connection_manager.mocked, dn)
+    assert controller.delete('mocked', dn)
 
-    results: list = controller.search(connection_manager.mocked, search_schema.load(data))
+    results: list = controller.search('mocked', search_schema.load(data))
     print(f'AFTER results type --> {type(results)}')
     print(f'AFTER results  --> {results}')
     assert len(results) == 0, f'AFTER: Expected 1 search result but found {len(results)}'

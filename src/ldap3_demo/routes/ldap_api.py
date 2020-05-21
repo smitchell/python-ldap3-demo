@@ -75,8 +75,8 @@ def modify_entry(dn: str):
 def search():
     data = request.get_data(as_text=True)
     json_data = json.loads(data)
-    search_results = ldap_controller.search(_get_name(request.args), search_schema.load(json_data))
-    return json.dumps(search_results), 200
+    response = ldap_controller.search(_get_name(request.args), search_schema.load(json_data))
+    return jsonify(response), 200
 
 @ldap_api_blueprint.route('/api/entry/<string:dn>',  methods=['DELETE'])
 def delete_entry(dn: str):

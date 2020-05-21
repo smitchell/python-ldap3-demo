@@ -32,7 +32,7 @@ class LdapController:
 
     def __init__(self):
         config = Configuration('ldap3_demo', __name__)
-        self.connection_manager = ConnectionManager(config['ldap'].get(dict))
+        self.connection_manager = ConnectionManager(config.get(dict))
 
     @staticmethod
     def scrub_json(source) -> None:

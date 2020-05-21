@@ -1,63 +1,24 @@
---- 
+---
 swagger:
   api_url: /static/swagger.yaml
   ui_url: /api/docs
 
-ldap:
-  connection_default_config:
-    # https://ldap3/readthedocs/io/en/latest/connection/html
-    auto_bind: AUTO_BIND_NONE
-    version: 3
-    authentication: AUTH_SIMPLE
-    client_strategy: REUSABLE
-    auto_referrals: True
-    sasl_mechanism: GSSAPI
-    sasl_credentials: null
-    collect_usage: True
-    read_only: False
-    lazy: True
-    check_names: True
-    raise_exceptions: False
-    pool_active: True
-    poop_exhust: True
-    pool_strategy: ROUND_ROBIN
-    pool_name: default
-    pool_size: 5
-    pool_lifetime: 120
-    pool_keepalive: 0
-    fast_decoder: True
-    receive_timeout: 20
-    return_empty_attributes: True
-    auto_range: True
-    use_referral_cache: True
-    auto_escape: True
-    auto_encode: True
-    connect_timeout: 20
+ldap_servers:
+  mocked:
+    ldap_host: localhost
+    server_config:
+      port: 389
+      use_ssl: False
+    connection_config:
+      user: n=admin,dc=test,dc=lab
+      client_strategy: MOCK_SYNC
 
-  server_default_config:
-    ldap_port: 389
-    use_ssl: False
-    allowed_referral_hosts: null
-    get_info: SCHEMA
-    mode: IP_SYSTEM_DEFAULT
-    tls: null
-    formatter: null
-    connect_timeout: 20
-
-  servers:
-    test:
-      server_config:
-        ldap_host: 192.168.1.5
-      connection_config:
-        user: 'cn=admin,ou=test,o=lab'
-        password: <<PASSWORD_PLACEHOLDER>>
-        pool_name: test
-        pool_size: 1
-
-    mocked:
-      server_config: null
-      connection_config:
-        user: 'cn=admin,ou=test,o=lab'
-        password: my_password
-        client_strategy: MOCK_SYNC
-
+  test:
+    ldap_host: 192.168.1.5
+    server_config:
+      port: 389
+      use_ssl: False
+    connection_config:
+      user: "cn=admin,dc=test,dc=lab"
+      authentication: SIMPLE
+      auto_bind: AUTO_BIND_NO_TLS
