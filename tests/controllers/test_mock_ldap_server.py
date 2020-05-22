@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 from ldap3 import Server, Connection, MOCK_SYNC, ALL_ATTRIBUTES, BASE
 

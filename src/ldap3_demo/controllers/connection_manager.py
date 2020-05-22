@@ -25,4 +25,5 @@ class ConnectionManager:
             for key in ldap_config:
                 if key not in connection_config:
                     connection_config[key] = ldap_config[key]
-        return Connection(self.servers[server_name], **connection_config)
+        conn: Connection = Connection(self.servers[server_name], **connection_config)
+        return conn

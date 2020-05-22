@@ -5,20 +5,25 @@ swagger:
 
 ldap_servers:
   mocked:
-    ldap_host: localhost
+    description: In memory LDAP Server
+    ldap_host: ldap://localhost
     server_config:
       port: 389
-      use_ssl: False
     connection_config:
-      user: n=admin,dc=test,dc=lab
+      user: cn=admin,dc=byteworksinc,dc=com
       client_strategy: MOCK_SYNC
 
   test:
-    ldap_host: 192.168.1.5
+    description: Local OpenLDAP server
+    ldap_host: ldap://192.168.1.5
     server_config:
+      connect_timeout: 360
+      get_info: ALL
       port: 389
-      use_ssl: False
+      use_ssl: True
     connection_config:
-      user: "cn=admin,dc=test,dc=lab"
       authentication: SIMPLE
-      auto_bind: AUTO_BIND_NO_TLS
+      auto_bind: AUTO_BIND_TLS_BEFORE_BIND
+      auto_referrals: True
+      client_strategy: SYNC
+      user: cn=admin,dc=byteworksinc,dc=com

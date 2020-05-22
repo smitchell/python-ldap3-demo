@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from ldap3_demo.controllers.ldap_controller import LdapController
 
 

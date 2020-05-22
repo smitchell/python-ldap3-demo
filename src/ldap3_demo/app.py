@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
+import logging
+import sys
+
 from confuse import Configuration
 from flask import Flask, jsonify, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
 from .routes import ldap_api
 from flask_cors import CORS
 
+config_root = 'ldap3_demo'
+
 app = Flask(__name__)
 CORS(app)
-config = Configuration('ldap3_demo', __name__)
+config = Configuration(config_root, __name__)
+
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+root.addHandler(handler)
 
 ### swagger specific ###
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(

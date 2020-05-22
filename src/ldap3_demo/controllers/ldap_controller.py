@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import logging
+
 from confuse import Configuration
 from typing import Any
 from flask import Response
@@ -34,36 +36,9 @@ class LdapController:
         config = Configuration('ldap3_demo', __name__)
         self.connection_manager = ConnectionManager(config.get(dict))
 
-    @staticmethod
-    def scrub_json(source) -> None:
-        if 'controls' in source:
-            controls = source['controls']
-            if controls is None or controls == 'None' or len(controls) == 0:
-                del source['controls']
-        if 'attributes' in source:
-            attributes = source['attributes']
-            if attributes is None or attributes == 'None' or len(attributes) == 0:
-                del source['attributes']
-            else:
-                # The dn of add_entry_request and modify entry request
-                # don't pass validation so only process the attributes.
-                attributes = source['attributes']
-                for key in attributes:
-                    attributes[key] = escape_filter_chars(attributes[key])
-
-    @staticmethod
-    def scrub_dict(source, remove_empty: bool = False):
-        target = {}
-        for key in source:
-            value = escape_filter_chars(source[key])
-            if remove_empty and (value is None or value == 'None' or len(value) == 0):
-                continue
-            target[key] = value
-        return target
-
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
-    def add(self, server_name: str, add_entry_request: AddEntryRequest) -> bool:
+    def add(self, server_name: str, add_entry_request: AddEntryRequest):
         connection: Connection = self.connection_manager.get_connection(server_name, None)
         connection.bind()
 
@@ -82,14 +57,18 @@ class LdapController:
 
         result_description = connection.result["description"]
         if result_description == 'entryAlreadyExists':
+            msg = f'{add_entry_request.dn} {result_description}: {connection.last_error}'
+            logging.error(msg)
             return Response(
-                f'The dn {add_entry_request.dn} already exists: {connection.last_error}',
+                msg,
                 status=400,
             )
 
         if result_description != 'success':
+            msg = f'An error occurred: {result_description}: {connection.last_error}'
+            logging.error(msg)
             return Response(
-                f'An error occurred: {connection.last_error}',
+                msg,
                 status=500,
             )
 
@@ -123,6 +102,7 @@ class LdapController:
 
         result_description = connection.result["description"]
         if result_description != 'success':
+            logging.error(f'The modify failed: {result_description}')
             return False
 
         return True
@@ -150,10 +130,11 @@ class LdapController:
             description = connection.result['description']
             if description == 'success':
                 return self._convert_results(connection.entries)
-            elif description != 'noSuchObject':
-                return Response(f'A search error occurred: {description}', status=500)
-
-        return []
+            elif description == 'noSuchObject':
+                return []
+        msg = f'Unknown search result: {connection.result}'
+        logging.error(msg)
+        return [msg]
 
     def delete(self, server_name: str, dn: Any, controls: Any = None) -> bool:
         connection: Connection = self.connection_manager.get_connection(server_name, None)
@@ -164,6 +145,7 @@ class LdapController:
             return True
         except LDAPInvalidDnError:
             # Ignore error if the dn does not exist.
+            logging.warning(f'{dn} could not be found to delete.')
             return True
 
     @staticmethod
@@ -181,4 +163,31 @@ class LdapController:
         if value == 'ALL_OPERATION_ATTRIBUTES':
             return ALL_OPERATIONAL_ATTRIBUTES
         return value
+
+    @staticmethod
+    def scrub_json(source) -> None:
+        if 'controls' in source:
+            controls = source['controls']
+            if controls is None or controls == 'None' or len(controls) == 0:
+                del source['controls']
+        if 'attributes' in source:
+            attributes = source['attributes']
+            if attributes is None or attributes == 'None' or len(attributes) == 0:
+                del source['attributes']
+            else:
+                # The dn of add_entry_request and modify entry request
+                # don't pass validation so only process the attributes.
+                attributes = source['attributes']
+                for key in attributes:
+                    attributes[key] = escape_filter_chars(attributes[key])
+
+    @staticmethod
+    def scrub_dict(source, remove_empty: bool = False):
+        target = {}
+        for key in source:
+            value = escape_filter_chars(source[key])
+            if remove_empty and (value is None or value == 'None' or len(value) == 0):
+                continue
+            target[key] = value
+        return target
 

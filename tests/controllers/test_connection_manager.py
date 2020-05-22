@@ -1,7 +1,6 @@
+#!/usr/bin/env python3
 from collections import OrderedDict
-
 from ldap3 import Server, Connection
-
 from ldap3_demo.controllers.connection_manager import ConnectionManager
 
 data: OrderedDict = OrderedDict(
@@ -63,6 +62,3 @@ def test_server_connection_config():
 def test_connection_manager_get_connection():
     connection: Connection = connection_manager.get_connection('mocked', None)
     assert connection is not None, 'Expected a Connection, but found none.'
-
-
-

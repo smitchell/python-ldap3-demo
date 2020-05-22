@@ -4,9 +4,10 @@ from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.controllers.ldap_controller import LdapController
 from ldap3_demo.schemas.add_entry_request_schema import AddEntryRequestSchema
 from ldap3_demo.schemas.search_schema import SearchSchema
+from ldap3_demo.app import config_root
 
 schema = AddEntryRequestSchema()
-config = Configuration('ldap3_demo', __name__)
+config = Configuration(config_root, __name__)
 connection_manager = ConnectionManager(config.get(dict))
 
 
