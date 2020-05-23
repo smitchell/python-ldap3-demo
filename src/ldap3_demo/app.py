@@ -11,30 +11,32 @@ from flask_cors import CORS
 config_root = 'ldap3_demo'
 
 app = Flask(__name__)
-CORS(app)
-config = Configuration(config_root, __name__)
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
 
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-root.addHandler(handler)
+with app.app_context():
+    CORS(app)
+    config = Configuration(config_root, __name__)
+    app.config['ldap_servers'] = config['ldap_servers'].get()
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logging.root.addHandler(handler)
+    app.logger.setLevel(logging.DEBUG)
+    app.logger.addHandler(handler)
 
-### swagger specific ###
-SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
-    config['swagger']['ui_url'].get(str),
-    config['swagger']['api_url'].get(str),
-    config={
-        'app_name': "Python-ldap-demo"
-    }
-)
-app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config['swagger']['ui_url'].get(str))
-### end swagger specific ###
+    ### swagger specific ###
+    SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+        config['swagger']['ui_url'].get(str),
+        config['swagger']['api_url'].get(str),
+        config={
+            'app_name': "Python-ldap-demo"
+        }
+    )
+    app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=config['swagger']['ui_url'].get(str))
+    ### end swagger specific ###
 
-app.register_blueprint(ldap_api.get_blueprint())
+    app.register_blueprint(ldap_api.get_blueprint())
 
 
 @app.errorhandler(400)
