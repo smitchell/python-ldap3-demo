@@ -9,38 +9,39 @@ from flask_cors import CORS
 config_root = 'ldap3_demo'
 
 
-def app_register_blueprints(app):
-    with app.app_context():
+def app_register_blueprints(appl):
+    with appl.app_context():
         from .routes import ldap_api
         ### swagger specific ###
         SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
-            app.config['swagger']['ui_url'],
-            app.config['swagger']['api_url'],
+            appl.config['swagger']['ui_url'],
+            appl.config['swagger']['api_url'],
             config={
                 'app_name': "Python-ldap-demo"
             }
         )
-        app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=app.config['swagger']['ui_url'])
+        appl.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=appl.config['swagger']['ui_url'])
         ### end swagger specific ###
-        app.register_blueprint(ldap_api.get_blueprint())
+        appl.register_blueprint(ldap_api.get_blueprint())
 
 
-def app_logging_config(app):
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logging.root.addHandler(handler)
-    app.logger.setLevel(logging.DEBUG)
-    app.logger.addHandler(handler)
+def app_logging_config(appl):
+    with appl.app_context():
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logging.root.addHandler(handler)
+        appl.logger.setLevel(logging.DEBUG)
+        appl.logger.addHandler(handler)
 
 
-def app_init(app):
-    CORS(app)
+def app_init(appl):
+    CORS(appl)
     config = Configuration(config_root, __name__)
-    app.config['ldap_servers'] = config['ldap_servers'].get(dict)
-    app.config['swagger'] = config['swagger'].get(dict)
-    app_register_blueprints(app)
+    appl.config['ldap_servers'] = config['ldap_servers'].get(dict)
+    appl.config['swagger'] = config['swagger'].get(dict)
+    app_register_blueprints(appl)
 
 
 app = Flask(__name__)
