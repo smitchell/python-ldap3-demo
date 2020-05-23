@@ -2,6 +2,7 @@
 from collections import OrderedDict
 from ldap3 import Server, Connection
 from ldap3_demo.controllers.connection_manager import ConnectionManager
+from ldap3_demo.app import  app
 
 data: OrderedDict = OrderedDict(
     [
@@ -34,8 +35,8 @@ data: OrderedDict = OrderedDict(
           ]))
      ])
 
-connection_manager = ConnectionManager(data)
-
+connection_manager = ConnectionManager()
+app.config['ldap_servers'] = data['ldap_servers']
 
 def test_init_connection_manager_local_server():
     local_server: Server = connection_manager.servers['test']
@@ -46,12 +47,8 @@ def test_server_connection_config():
     config = connection_manager.ldap_configs['test']['connection_config']
     assert config is not None, 'Expected mocked config, but found none'
 
-    actual = config['auto_bind']
-    expected = 'AUTO_BIND_NO_TLS'
-    assert actual == expected, f'Expected {expected} but found {actual}'
-
     actual = config['client_strategy']
-    expected = 'REUSABLE'
+    expected = 'SYNC'
     assert actual == expected, f'Expected {expected} but found {actual}'
 
     actual = config['authentication']

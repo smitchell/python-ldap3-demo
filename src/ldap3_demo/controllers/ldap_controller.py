@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-import logging
-
-from confuse import Configuration
 from typing import Any
 from flask import Response
 from ldap3 import Connection, ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES, DEREF_NEVER, DEREF_SEARCH, DEREF_BASE, \
@@ -12,6 +9,8 @@ from ldap3_demo.controllers.connection_manager import ConnectionManager
 from ldap3_demo.dtos.add_entry_request import AddEntryRequest
 from ldap3_demo.dtos.modify_entry_request import ModifyEntryRequest
 from ldap3_demo.dtos.search import Search
+from flask import current_app
+from ldap3_demo.app import app
 
 dereference_aliases_types = dict(
     DEREF_NEVER=DEREF_NEVER,
@@ -33,8 +32,9 @@ search_scope_types = dict(BASE=BASE, LEVEL=LEVEL, SUBTREE=SUBTREE)
 class LdapController:
 
     def __init__(self):
-        config = Configuration('ldap3_demo', __name__)
-        self.connection_manager = ConnectionManager(config.get(dict))
+        with app.app_context():
+            self.logger = current_app.logger
+        self.connection_manager = ConnectionManager()
 
     # This method adds a new entry to LDAP. The dn must be unique and must match the dn
     # attribute in the AddEntryRequest.
@@ -58,7 +58,7 @@ class LdapController:
         result_description = connection.result["description"]
         if result_description == 'entryAlreadyExists':
             msg = f'{add_entry_request.dn} {result_description}: {connection.last_error}'
-            logging.error(msg)
+            self.logger.error(msg)
             return Response(
                 msg,
                 status=400,
@@ -66,7 +66,7 @@ class LdapController:
 
         if result_description != 'success':
             msg = f'An error occurred: {result_description}: {connection.last_error}'
-            logging.error(msg)
+            self.logger.error(msg)
             return Response(
                 msg,
                 status=500,
@@ -102,7 +102,7 @@ class LdapController:
 
         result_description = connection.result["description"]
         if result_description != 'success':
-            logging.error(f'The modify failed: {result_description}')
+            self.logger.error(f'The modify failed: {result_description}')
             return False
 
         return True
@@ -133,7 +133,7 @@ class LdapController:
             elif description == 'noSuchObject':
                 return []
         msg = f'Unknown search result: {connection.result}'
-        logging.error(msg)
+        self.logger.error(msg)
         return [msg]
 
     def delete(self, server_name: str, dn: Any, controls: Any = None) -> bool:
@@ -145,7 +145,7 @@ class LdapController:
             return True
         except LDAPInvalidDnError:
             # Ignore error if the dn does not exist.
-            logging.warning(f'{dn} could not be found to delete.')
+            self.logger.warning(f'{dn} could not be found to delete.')
             return True
 
     @staticmethod
